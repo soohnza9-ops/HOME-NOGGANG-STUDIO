@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { getFirestore, doc, setDoc,updateDoc, serverTimestamp } from "firebase/firestore";
-
+import { sendPasswordResetEmail } from "firebase/auth";
 
 import { auth, googleProvider, app } from "../src/firebase";
 const db = getFirestore(app);
@@ -28,6 +28,20 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLoginSuccess }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [verifyNotice, setVerifyNotice] = useState(false);
+const handlePasswordReset = async () => {
+  if (!email) {
+    setError("이메일을 먼저 입력해주세요.");
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    setVerifyNotice(true);
+    setError(null);
+  } catch (err: any) {
+    setError("비밀번호 재설정 메일 전송 실패");
+  }
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -175,7 +189,13 @@ onLoginSuccess();
 
           {!isRegistering && (
             <div className="flex justify-end">
-              <button type="button" className="text-xs text-yellow-400 font-bold hover:underline">비밀번호를 잊으셨나요?</button>
+<button
+  type="button"
+  onClick={handlePasswordReset}
+  className="text-xs text-yellow-400 font-bold hover:underline"
+>
+  비밀번호를 잊으셨나요?
+</button>
             </div>
           )}
 
