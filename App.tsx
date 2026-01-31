@@ -100,7 +100,8 @@ if (authLoading) {
 }
 
 return (
-  <div className="min-h-screen bg-black text-white selection:bg-yellow-400 selection:text-black">
+<div className="min-h-screen bg-black text-white selection:bg-yellow-400 selection:text-black overflow-x-hidden">
+
     <Navbar 
       currentPage={currentPage} 
       onNavigate={setCurrentPage} 
@@ -110,7 +111,7 @@ return (
       onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
     />
       
-    <div className="flex max-w-[1600px] mx-auto">
+    <div className="flex max-w-[1600px] mx-auto min-h-[calc(100vh-73px)]">
 <Sidebar 
   currentPage={currentPage} 
   onNavigate={setCurrentPage} 
@@ -124,7 +125,7 @@ return (
       </main>
     </div>
 
-    <footer className="border-t border-zinc-800 py-12 mt-20">
+    <footer className="border-t border-zinc-800 py-12 pt-20">
       <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8">

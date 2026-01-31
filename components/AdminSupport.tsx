@@ -15,6 +15,7 @@ import {
   User,
   LayoutGrid,
   BarChart3,
+  Star,
   ChevronDown
 } from 'lucide-react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
@@ -31,13 +32,16 @@ interface Inquiry {
   content: string;
   adminReply?: string;
   repliedAt?: string;
+    isFavorite?: boolean;
 }
 const AdminSupport: React.FC = () => {
+
   const [selectedInquiryId, setSelectedInquiryId] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
     const [typeFilter, setTypeFilter] = useState<string>("전체");
   const [showFilter, setShowFilter] = useState(false);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   useEffect(() => {
   const q = query(
     collection(db, "supportTickets"),
@@ -48,17 +52,19 @@ const AdminSupport: React.FC = () => {
     const arr: Inquiry[] = [];
     snap.forEach((doc) => {
       const d = doc.data();
-      arr.push({
-        id: doc.id,
-        userEmail: d.email,
-        type: d.type,
-        title: d.title,
-        status: d.status,
-        createdAt: d.createdAt?.toDate().toLocaleString("ko-KR") || "",
-        content: d.content,
-        adminReply: d.adminReply,
-        repliedAt: d.repliedAt?.toDate().toLocaleString("ko-KR")
-      });
+arr.push({
+  id: doc.id,
+  userEmail: d.email,
+  type: d.type,
+  title: d.title,
+  status: d.status,
+  createdAt: d.createdAt?.toDate().toLocaleString("ko-KR") || "",
+  content: d.content,
+  adminReply: d.adminReply,
+  repliedAt: d.repliedAt?.toDate().toLocaleString("ko-KR"),
+  isFavorite: d.isFavorite || false,
+});
+
     });
    const sorted = arr.sort((a, b) => {
   // 둘 다 답변 완료면 오래된 것 위로
@@ -107,6 +113,17 @@ const handleDelete = async (e: React.MouseEvent, id: string) => {
   }
 };
 
+const toggleFavorite = async (
+  e: React.MouseEvent,
+  id: string,
+  current: boolean
+) => {
+  e.stopPropagation();
+  await updateDoc(doc(db, "supportTickets", id), {
+    isFavorite: !current,
+  });
+};
+
   const toggleInquiry = (id: string) => {
     if (selectedInquiryId === id) {
       setSelectedInquiryId(null);
@@ -124,7 +141,11 @@ const filteredInquiries = inquiries.filter(inq => {
   const matchType =
     typeFilter === "전체" ? true : inq.type === typeFilter;
 
-  return matchSearch && matchType;
+  const matchFavorite =
+  showFavoritesOnly ? inq.isFavorite === true : true;
+
+return matchSearch && matchType && matchFavorite;
+
 });
 
 
@@ -145,6 +166,7 @@ const filteredInquiries = inquiries.filter(inq => {
           </h2>
           <p className="text-zinc-500 mt-1">사용자들의 모든 문의사항을 관리하고 답변합니다.</p>
         </div>
+        
         
         <div className="flex gap-4">
           <div className="bg-zinc-900 border border-zinc-800 px-6 py-3 rounded-2xl flex items-center gap-3">
@@ -191,8 +213,24 @@ const filteredInquiries = inquiries.filter(inq => {
     onClick={() => setShowFilter(!showFilter)}
     className="p-3 bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors"
   >
+
+
     <Filter className="w-4 h-4 text-zinc-400" />
   </button>
+
+<button
+  onClick={() => setShowFavoritesOnly(v => !v)}
+  className={`p-3 rounded-xl transition-colors ${
+    showFavoritesOnly
+      ? "bg-yellow-400 text-black"
+      : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700"
+  }`}
+>
+  <Star
+    className="w-4 h-4"
+    fill={showFavoritesOnly ? "currentColor" : "none"}
+  />
+</button>
 
   {showFilter && (
     <div className="absolute right-0 mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl z-50 overflow-hidden">
@@ -269,6 +307,19 @@ const filteredInquiries = inquiries.filter(inq => {
 <span className="text-sm font-bold text-zinc-300">
   {inq.createdAt}
 </span>
+
+<button
+  onClick={(e) => toggleFavorite(e, inq.id, !!inq.isFavorite)}
+  className="p-2 rounded-lg hover:bg-zinc-800"
+>
+  <Star
+    className={`w-4 h-4 ${
+      inq.isFavorite ? "text-yellow-400" : "text-zinc-600"
+    }`}
+    fill={inq.isFavorite ? "currentColor" : "none"}
+  />
+</button>
+
                     <div className={`p-2 rounded-lg transition-transform duration-300 ${isOpen ? 'rotate-180 bg-yellow-400/10 text-yellow-400' : 'text-zinc-500 bg-zinc-800/50'}`}>
                       <ChevronDown className="w-5 h-5" />
                     </div>
@@ -282,7 +333,7 @@ const filteredInquiries = inquiries.filter(inq => {
                       {/* Top: User Inquiry */}
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <p className="text-xs font-black text-white tracking-wide">사용자 문의 내용</p>
+                          <p className="text-[15px] font-black text-white tracking-wide">사용자 문의 내용</p>
                           <button 
                             onClick={(e) => handleDelete(e, inq.id)}
                             className="text-[10px] font-black text-red-500/50 hover:text-red-500 uppercase flex items-center gap-1.5"
@@ -290,14 +341,14 @@ const filteredInquiries = inquiries.filter(inq => {
                             <Trash2 className="w-3.5 h-3.5" /> 문의 삭제
                           </button>
                         </div>
-                       <div className="bg-black/60 border border-zinc-700 rounded-2xl p-6 text-white leading-relaxed text-base">
-                          {inq.content}
-                        </div>
+<div className="bg-black/60 border border-zinc-700 rounded-2xl p-6 text-white leading-relaxed text-base whitespace-pre-wrap">
+  {inq.content}
+</div>
                       </div>
 
                       {/* Bottom: Reply Section */}
                       <div className="space-y-4">
-                       <p className="text-xs font-black text-white tracking-wide">운영자 답변</p>
+                       <p className="text-[15px] font-black text-white tracking-wide">운영자 답변</p>
                         
                         {inq.adminReply ? (
                           <div className="bg-green-500/5 border border-green-500/20 rounded-2xl p-6 text-zinc-300">
@@ -305,7 +356,9 @@ const filteredInquiries = inquiries.filter(inq => {
                               <p className="text-[10px] font-black text-green-500 uppercase tracking-widest">Sent Reply</p>
                               <span className="text-[10px] text-zinc-500">{inq.repliedAt}</span>
                             </div>
-                            <p className="text-sm italic">{inq.adminReply}</p>
+                           <p className="text-sm italic whitespace-pre-wrap">
+  {inq.adminReply}
+</p>
                           </div>
                         ) : (
                           <div className="space-y-3">

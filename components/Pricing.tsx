@@ -100,7 +100,8 @@ const Pricing: React.FC = () => {
   ];
 
   return (
-   <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 max-w-[1400px] mx-auto px-12">
+ <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 max-w-[1400px] mx-auto px-12 overflow-x-hidden">
+
 
       {/* Header Section */}
       <div className="text-center mb-20">

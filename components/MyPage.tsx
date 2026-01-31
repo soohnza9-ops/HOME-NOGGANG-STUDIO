@@ -19,6 +19,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { onSnapshot } from "firebase/firestore";
 import { auth, db } from "../src/firebase";
+import { createPortal } from "react-dom";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 interface MyPageProps {
   onNavigate: (page: Page) => void;
@@ -64,6 +66,12 @@ function planDesc(plan?: string) {
   }
 }
 
+function limit3(value?: number) {
+  if (value === undefined || value === null) return "-";
+  const s = String(value);
+  return s.length > 3 ? s.slice(0, 4) : s;
+}
+
 function fmtDateTimeKR(d: Date | null) {
   if (!d) return "-";
   return new Intl.DateTimeFormat("ko-KR", {
@@ -104,16 +112,21 @@ if (!(window as any).NOGGANG_DEVICE) {
   };
 }
 
-
 const MyPage: React.FC<MyPageProps> = ({ onNavigate, onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [userDoc, setUserDoc] = useState<UserDoc | null>(null);
+    const [sendingReset, setSendingReset] = useState(false);
+    const [showPwResetModal, setShowPwResetModal] = useState(false);
+const [pwResetResult, setPwResetResult] = useState<
+  "success" | "error" | null
+>(null);
 const [editEmail, setEditEmail] = useState("");
 const [savingEmail, setSavingEmail] = useState(false);
 const [deviceCredits, setDeviceCredits] = useState<Credits>({});
 const [deviceResetAt, setDeviceResetAt] = useState<any>(null);
-
+const [showDeleteModal, setShowDeleteModal] = useState(false);
+const [deleting, setDeleting] = useState(false);
 useEffect(() => {
   if ((window as any).NOGGANG_DEVICE?.get) return;
 
@@ -151,10 +164,51 @@ useEffect(() => {
     const userRef = doc(db, "users", u.uid);
 
 unsubUser = onSnapshot(userRef, async (snap) => {
+  if (!snap.exists()) {
+  setUserDoc(null);
+  setDeviceCredits({});
+  setDeviceResetAt(null);
+  setLoading(false);
+  return;
+}
+
   const data = snap.exists() ? (snap.data() as UserDoc) : {};
   setUserDoc(snap.exists() ? data : null);
 
   const plan = (data.plan ?? "free").toLowerCase();
+
+// ✅ FREE 플랜이면 서버 status 한 번만 호출
+if (plan === "free") {
+  const deviceApi = (window as any).NOGGANG_DEVICE;
+
+  let deviceId: string | null = null;
+
+  if (deviceApi && typeof deviceApi.get === "function") {
+    deviceId = await deviceApi.get();
+  } else {
+    deviceId = localStorage.getItem("NOGGANG_DEVICE_ID");
+  }
+
+  if (deviceId) {
+    try {
+      const token = await u.getIdToken(); // ❗ force refresh 제거
+
+await fetch(
+  `https://us-central1-noggang-studio.cloudfunctions.net/use/status?deviceId=${deviceId}`,
+  {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
+    } catch {
+      // 실패 시 아무것도 하지 않음 (토큰 재요청 금지)
+    }
+  }
+}
+
 
 
       // FREE → deviceUsage 기준
@@ -178,26 +232,27 @@ if (!deviceId) {
 }
 
 const deviceRef = doc(db, "deviceUsage", deviceId);
-
+if (unsubDevice) {
+  unsubDevice();
+  unsubDevice = null;
+}
 unsubDevice = onSnapshot(deviceRef, (dSnap) => {
   if (!dSnap.exists()) {
-    setDeviceCredits({});
-    setDeviceResetAt(null);
-    setLoading(false);
     return;
   }
 
   const d = dSnap.data();
 
   setDeviceCredits({
-    script: d.script ?? d.credits?.script,
-    asset: d.asset ?? d.credits?.asset,
-    video: d.video ?? d.credits?.video,
+    script: d.credits?.script ?? d.script,
+    asset: d.credits?.asset ?? d.asset,
+    video: d.credits?.video ?? d.video,
   });
 
   setDeviceResetAt(d.resetAt ?? null);
   setLoading(false);
 });
+
 
 
 }
@@ -316,27 +371,27 @@ const emailLocked = userDoc?.emailLocked === true;
                     <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div className="bg-black/20 border border-zinc-800/60 rounded-2xl p-4">
                         <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">
-                          script
+                          대본분석
                         </div>
-                        <div className="text-2xl font-black text-zinc-100 mt-1">
-                          {credits.script ?? "-"}
-                        </div>
+<div className="text-2xl font-black text-zinc-100 mt-1">
+  {limit3(credits.script)}
+</div>
                       </div>
                       <div className="bg-black/20 border border-zinc-800/60 rounded-2xl p-4">
                         <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">
-                          asset
+                          에셋저장
                         </div>
-                        <div className="text-2xl font-black text-zinc-100 mt-1">
-                          {credits.asset ?? "-"}
-                        </div>
+<div className="text-2xl font-black text-zinc-100 mt-1">
+  {limit3(credits.asset)}
+</div>
                       </div>
                       <div className="bg-black/20 border border-zinc-800/60 rounded-2xl p-4">
                         <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">
-                          video
+                          영상저장
                         </div>
-                        <div className="text-2xl font-black text-zinc-100 mt-1">
-                          {credits.video ?? "-"}
-                        </div>
+<div className="text-2xl font-black text-zinc-100 mt-1">
+  {limit3(credits.video)}
+</div>
                       </div>
                     </div>
 
@@ -362,7 +417,25 @@ const emailLocked = userDoc?.emailLocked === true;
               </div>
             </div>
             {/* Decorative Background Icon */}
-            <Zap className="absolute -right-10 -bottom-10 w-64 h-64 text-yellow-400/5 rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-1000" />
+          <img
+  src="/logo.png"
+  alt="NOGGANG Logo"
+  className="
+    absolute
+    -right-12
+    -bottom-1
+    w-72
+    h-72
+    opacity-[0.09]
+    rotate-12
+    pointer-events-none
+    select-none
+    group-hover:scale-110
+    transition-transform
+    duration-1000
+  "
+/>
+
           </section>
 
           {/* 2. 기본 정보 */}
@@ -528,9 +601,75 @@ const emailLocked = userDoc?.emailLocked === true;
             </div>
 
             <div className="flex flex-wrap items-center gap-4">
-              <button className="px-6 py-3 bg-zinc-800/50 text-zinc-300 font-bold rounded-xl text-xs hover:bg-zinc-800 hover:text-white transition-all">
-                비밀번호 변경
-              </button>
+<button
+  disabled={sendingReset}
+  onClick={async () => {
+    const user = auth.currentUser;
+
+    if (!user || !user.email) {
+      setPwResetResult("error");
+      setShowPwResetModal(true);
+      return;
+    }
+
+    const providerId = user.providerData?.[0]?.providerId;
+    if (providerId !== "password") {
+      setPwResetResult("error");
+      setShowPwResetModal(true);
+      return;
+    }
+
+    try {
+      setSendingReset(true);
+      await sendPasswordResetEmail(auth, user.email);
+      setPwResetResult("success");
+    } catch {
+      setPwResetResult("error");
+    } finally {
+      setSendingReset(false);
+      setShowPwResetModal(true);
+    }
+  }}
+  className="px-6 py-3 bg-zinc-800/50 text-zinc-300 font-bold rounded-xl text-xs hover:bg-zinc-800 hover:text-white transition-all disabled:opacity-50"
+>
+  {sendingReset ? "메일 발송 중..." : "비밀번호 변경"}
+</button>
+{showPwResetModal &&
+  createPortal(
+    <div className="fixed inset-0 z-[9999] bg-black/30 backdrop-blur-sm flex items-center justify-center">
+      <div className="bg-zinc-900 border border-yellow-400/30 rounded-[2rem] px-8 py-7 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95">
+        <h3 className="text-xl font-black text-white mb-3">
+          비밀번호 변경
+        </h3>
+
+        {pwResetResult === "success" ? (
+          <p className="text-zinc-300 text-sm leading-relaxed">
+            비밀번호 재설정 메일을 발송했습니다.<br />
+            메일함을 확인해주세요.
+          </p>
+        ) : (
+          <p className="text-red-400 text-sm leading-relaxed">
+            이메일 로그인 계정만 비밀번호 변경이 가능합니다.
+          </p>
+        )}
+
+        <div className="mt-6">
+          <button
+            onClick={() => {
+              setShowPwResetModal(false);
+              setPwResetResult(null);
+            }}
+            className="w-full py-3 rounded-xl bg-yellow-400 text-black font-black hover:bg-yellow-300 transition"
+          >
+            확인
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  )}
+
+
               <button
                 onClick={onLogout}
                 className="px-6 py-3 bg-zinc-800/50 text-zinc-300 font-bold rounded-xl text-xs hover:bg-red-500/10 hover:text-red-500 transition-all flex items-center gap-2"
@@ -538,15 +677,107 @@ const emailLocked = userDoc?.emailLocked === true;
                 <LogOut className="w-3.5 h-3.5" />
                 로그아웃
               </button>
-              <div className="h-4 w-px bg-zinc-800 mx-2"></div>
-              <button className="px-6 py-3 text-zinc-600 font-black text-[10px] uppercase tracking-widest hover:text-red-500 transition-colors flex items-center gap-2">
-                <Trash2 className="w-3.5 h-3.5" />
-                계정 삭제
-              </button>
+             <div className="h-4 w-px bg-zinc-800 mx-2 ml-auto"></div>
+<button
+  onClick={() => setShowDeleteModal(true)}
+  className="px-6 py-3 text-zinc-600 font-black text-[13px] uppercase tracking-widest hover:text-red-500 transition-colors flex items-center gap-2"
+>
+
+  <Trash2 className="w-3.5 h-3.5" />
+  계정 삭제
+</button>
+
             </div>
           </section>
         </div>
       )}
+{showDeleteModal &&
+  createPortal(
+<div className="fixed inset-0 z-[9999] bg-black/20 backdrop-blur-sm backdrop-saturate-125 flex items-center justify-center">
+
+
+      <div className="bg-zinc-900 border border-red-500/30 rounded-[2rem] px-8 py-7 w-full max-w-md shadow-2xl animate-in fade-in zoom-in-95">
+        <h3 className="text-2xl font-black text-white mb-3">
+          정말 계정을 삭제할까요?
+        </h3>
+
+        <p className="text-zinc-400 text-sm leading-relaxed">
+          계정을 삭제하면 모든 사용 기록이 즉시 제거되며,
+          <br />
+          <span className="text-red-400 font-bold">
+            삭제된 계정은 복구할 수 없습니다.
+          </span>
+        </p>
+
+        <div className="mt-8 flex gap-3">
+          <button
+            disabled={deleting}
+            onClick={() => setShowDeleteModal(false)}
+            className="flex-1 py-3 rounded-xl bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700 transition"
+          >
+            취소
+          </button>
+
+ <button
+  disabled={deleting}
+ onClick={async () => {
+  setDeleting(true);
+
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("로그인 상태가 아닙니다.");
+      return;
+    }
+
+let token = "";
+try {
+  token = await user.getIdToken(); // ❗ force refresh 제거
+} catch {
+  alert("세션이 만료되었습니다. 다시 로그인 후 계정 삭제를 진행해주세요.");
+  setDeleting(false);
+  setShowDeleteModal(false);
+  return;
+}
+
+
+
+    const res = await fetch(
+      "https://us-central1-noggang-studio.cloudfunctions.net/use/delete-account",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const json = await res.json();
+
+    if (!res.ok || json.ok !== true) {
+      alert("계정 삭제에 실패했습니다. 잠시 후 다시 시도해주세요.");
+      return;
+    }
+
+    await auth.signOut();
+    onNavigate(Page.HOME);
+  } finally {
+    setDeleting(false);
+  }
+}}
+
+  className="flex-1 py-3 rounded-xl bg-red-500 text-white font-black hover:bg-red-600 transition disabled:opacity-50"
+>
+  {deleting ? "삭제 중..." : "계정 삭제"}
+</button>
+
+        </div>
+      </div>
+    </div>,
+    document.body
+  )}
+
+
     </div>
   );
 };

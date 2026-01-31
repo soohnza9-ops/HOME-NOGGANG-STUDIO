@@ -63,10 +63,10 @@ const [inquiries, setInquiries] = useState<Ticket[]>([]);
   }, []);
 
 
-  const handleBackToList = () => {
-    setView('list');
-    setSelectedTicket(null);
-  };
+const handleBackToList = () => {
+  setSelectedTicket(null);
+  setView('list');
+};
 
   const handleOpenForm = () => setView('form');
   
@@ -74,34 +74,38 @@ const [inquiries, setInquiries] = useState<Ticket[]>([]);
     setSelectedTicket(ticket);
     setView('detail');
   };
-useEffect(() => {
+
+  useEffect(() => {
   const unsubAuth = onAuthStateChanged(auth, (u) => {
     setUser(u);
-
     if (!u) {
       setInquiries([]);
-      return;
     }
-
-    const q = query(
-      collection(db, "supportTickets"),
-      where("uid", "==", u.uid),
-      orderBy("createdAt", "desc")
-    );
-
-    const unsubTickets = onSnapshot(q, (snap) => {
-      const arr: Ticket[] = [];
-      snap.forEach((doc) => {
-        arr.push({ id: doc.id, ...(doc.data() as any) });
-      });
-      setInquiries(arr);
-    });
-
-    return () => unsubTickets();
   });
 
   return () => unsubAuth();
 }, []);
+
+useEffect(() => {
+  if (!user) return;
+
+  const q = query(
+    collection(db, "supportTickets"),
+    where("uid", "==", user.uid),
+    orderBy("createdAt", "desc")
+  );
+
+  const unsubTickets = onSnapshot(q, (snap) => {
+    const arr: Ticket[] = [];
+    snap.forEach((doc) => {
+      arr.push({ id: doc.id, ...(doc.data() as any) });
+    });
+    setInquiries(arr);
+  });
+
+  return () => unsubTickets();
+}, [user]);
+
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-5xl mx-auto space-y-8 pb-24 px-4">
@@ -248,50 +252,63 @@ useEffect(() => {
                   </div>
                   <div className="space-y-3">
                     <label className="text-xs font-black text-zinc-500 uppercase tracking-widest ml-1">제목</label>
-                    <input 
+<input
   type="text"
   value={title}
-  onChange={(e) => setTitle(e.target.value)}
-  placeholder="제목을 입력하세요" 
-  className="w-full bg-black border border-zinc-800 rounded-xl py-4 px-5 text-white focus:outline-none focus:border-yellow-400/50 transition-colors font-bold placeholder:text-zinc-700" 
+  onChange={(e) => {
+    if (e.target.value.length <= 20) {
+      setTitle(e.target.value);
+    }
+  }}
+  maxLength={20}
+  placeholder="제목을 입력하세요 (최대 20자)"
+  className="w-full bg-black border border-zinc-800 rounded-xl py-4 px-5 text-white focus:outline-none focus:border-yellow-400/50 transition-colors font-bold placeholder:text-zinc-700"
 />
+
 
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <label className="text-xs font-black text-zinc-500 uppercase tracking-widest ml-1">문의 내용</label>
-                 <textarea 
+<textarea 
   rows={8}
   value={message}
-  onChange={(e) => setMessage(e.target.value)}
-  placeholder="문의 내용을 입력하세요" 
+  onChange={(e) => {
+    if (e.target.value.length <= 1500) {
+      setMessage(e.target.value);
+    }
+  }}
+  maxLength={1500}
+  placeholder="문의 내용을 입력하세요 (최대 1500자)" 
   className="w-full bg-black border border-zinc-800 rounded-[1.5rem] py-5 px-6 text-white focus:outline-none focus:border-yellow-400/50 transition-colors font-medium leading-relaxed resize-none placeholder:text-zinc-700"
 ></textarea>
+
 
                 </div>
 
                 <div className="flex items-center gap-4 pt-4">
                  <button
   disabled={!user}
-  onClick={async () => {
-    if (!user) return;
+onClick={async () => {
+  if (!user) return;
 
-    await addDoc(collection(db, "supportTickets"), {
-      uid: user.uid,
-      email: user.email,
-      type: selectedType,
-      title: title,
-      content: message,
-      status: "open",
-      createdAt: serverTimestamp(),
-    });
+  await addDoc(collection(db, "supportTickets"), {
+    uid: user.uid,
+    email: user.email,
+    type: selectedType,
+    title: title,
+    content: message,
+    status: "open",
+    createdAt: serverTimestamp(),
+  });
 
-    setTitle("");
-    setMessage("");
-    setSelectedType("사용 방법");
-    setView("list");
-  }}
+  setTitle("");
+  setMessage("");
+  setSelectedType("사용 방법");
+  setView("list");
+}}
+
   className="flex-1 py-4 bg-yellow-400 text-black font-black rounded-xl hover:bg-yellow-300 transition-all flex items-center justify-center gap-2 shadow-lg shadow-yellow-400/20 disabled:opacity-50"
 >
   <Send className="w-4 h-4" /> 문의하기
@@ -305,120 +322,111 @@ useEffect(() => {
             </div>
           )}
 
-          {/* 1-2. 문의 상세 섹션 */}
-          {view === 'detail' && selectedTicket && (
-            <div className="animate-in zoom-in-95 duration-500 space-y-8">
-              <div className="flex items-center gap-4">
-                <button onClick={handleBackToList} className="p-2 hover:bg-zinc-800 rounded-xl transition-colors text-zinc-500 hover:text-white">
-                  <ArrowLeft className="w-6 h-6" />
-                </button>
-                <h3 className="text-2xl font-black">문의 상세</h3>
-              </div>
-
-              <div className="space-y-6">
-             <div className="bg-zinc-800/70 border border-yellow-400/25 rounded-[2.5rem] p-8 md:p-12 space-y-8 shadow-lg relative">
-
-
-
-                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 border-b border-zinc-800 pb-8">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                       <span className="px-4 py-1.5 bg-yellow-400/15 text-yellow-300 text-sm font-black rounded-lg border border-yellow-400/30 uppercase tracking-widest">
-
-                          {selectedTicket.type}
-                        </span>
-
-
-                      </div>
-                      <h4 className="text-[23px] font-black text-zinc-100">{selectedTicket.title}</h4>
-                    </div>
-  <div className="absolute top-8 right-12 z-10 flex flex-col items-end gap-2">
-  {/* 상태 + 휴지통 한 줄 */}
-  <div className="flex items-center gap-2">
-{(() => {
-  const s = getStatusUI(selectedTicket.status);
-  return (
-    <div className={`flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-black border tracking-widest ${s.class}`}>
-      <CheckCircle2 className="w-4 h-4" />
-      {s.text}
-    </div>
-  );
-})()}
-
-
-    {!selectedTicket.adminReply && (
+ {view === 'detail' && selectedTicket && (
+  <div className="animate-in fade-in duration-500 space-y-6">
+    {/* 상단 헤더 */}
+    <div className="flex items-center gap-4">
       <button
-        onClick={async () => {
-          const { deleteDoc, doc } = await import("firebase/firestore");
-          await deleteDoc(doc(db, "supportTickets", selectedTicket.id));
-          setView("list");
-          setSelectedTicket(null);
-        }}
-        className="w-10 h-10 flex items-center justify-center rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20"
-        title="문의 삭제"
+        onClick={handleBackToList}
+        className="p-2 rounded-xl hover:bg-zinc-800 text-zinc-500 hover:text-white transition"
       >
-        🗑
+        <ArrowLeft className="w-6 h-6" />
       </button>
-    )}
+      <h3 className="text-2xl font-black">문의 상세</h3>
+    </div>
+
+    {/* 카드 컨테이너 */}
+    <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] overflow-hidden shadow-xl ring-2 ring-yellow-400/40">
+
+
+
+      {/* 카드 헤더 */}
+<div className="p-6 flex items-center justify-between border-b border-zinc-800">
+  <div className="flex items-center gap-4 flex-wrap">
+    <span
+      className={`text-xs font-black px-3 py-1.5 rounded-full border shrink-0 ${
+        selectedTicket.status === "done"
+          ? "text-green-400 border-green-400/30 bg-green-400/10"
+          : "text-yellow-400 border-yellow-400/30 bg-yellow-400/10"
+      }`}
+    >
+      {selectedTicket.status === "done" ? "답변완료" : "접수완료"}
+    </span>
+
+    <span className="text-sm font-black text-yellow-400 whitespace-nowrap">
+      {selectedTicket.type}
+    </span>
+
+    <span className="text-lg font-black text-white break-all">
+      {selectedTicket.title}
+    </span>
   </div>
 
-  {/* 시간 (그 아래) */}
-  <span className="text-zinc-400 text-sm font-semibold whitespace-nowrap">
-    {selectedTicket.createdAt?.toDate().toLocaleString("ko-KR")}
-  </span>
+
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-zinc-400 font-semibold">
+            {selectedTicket.createdAt?.toDate().toLocaleString("ko-KR")}
+          </span>
+
+          {!selectedTicket.adminReply && (
+            <button
+              onClick={async () => {
+                const { deleteDoc, doc } = await import("firebase/firestore");
+                await deleteDoc(doc(db, "supportTickets", selectedTicket.id));
+                setView("list");
+                setSelectedTicket(null);
+              }}
+              className="w-9 h-9 flex items-center justify-center rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20"
+            >
+              🗑
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* 본문 */}
+      <div className="p-8 space-y-8">
+
+        {/* 사용자 문의 */}
+        <div className="space-y-3">
+          <p className="text-xs font-black tracking-widest text-zinc-400">
+            사용자 문의 내용
+          </p>
+<div className="bg-black/60 border border-zinc-800 rounded-2xl p-6 text-white leading-relaxed text-base whitespace-pre-wrap">
+  {selectedTicket.content}
 </div>
+        </div>
 
+        {/* 운영자 답변 */}
+        {selectedTicket.adminReply ? (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-black tracking-widest text-yellow-400">
+                운영자 답변
+              </p>
+              <span className="text-xs text-zinc-500 font-semibold">
+                {selectedTicket.repliedAt?.toDate().toLocaleString("ko-KR")}
+              </span>
+            </div>
 
-             </div>     
-                  <div className="space-y-4">
-                   <p className="text-[15px] font-black text-zinc-400 uppercase tracking-widest">문의 내용</p>
-                    <p className="text-white leading-relaxed text-xl font-semibold">
-                      {selectedTicket.content}
-                    </p>
-                  </div>
-                </div>
-
-                {/* 운영자 답변 섹션 */}
-{selectedTicket.adminReply ? (
-  <div className="bg-zinc-700/45 border border-yellow-400/40 rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden shadow-2xl">
-    <div className="absolute top-0 left-0 w-1.5 h-full bg-yellow-400"></div>
-
-<div className="flex items-center justify-between mb-8">
-  <h5 className="text-xl font-black flex items-center gap-3 text-yellow-400">
-    <Headset className="w-6 h-6" /> 운영자 답변
-  </h5>
-
-  <span className="text-zinc-400 text-sm font-semibold whitespace-nowrap">
-    {selectedTicket.repliedAt?.toDate().toLocaleString("ko-KR")}
-  </span>
+<div className="bg-yellow-400/5 border border-yellow-400/30 rounded-2xl p-6 text-zinc-100 text-base leading-relaxed whitespace-pre-wrap">
+  {selectedTicket.adminReply}
 </div>
-
-
-    <p className="text-zinc-100 leading-relaxed text-lg font-semibold">
-      {selectedTicket.adminReply}
-    </p>
-  </div>
-) : (
-  <div className="bg-zinc-900/50 border border-zinc-700/50 rounded-[2.5rem] p-12 flex flex-col items-center justify-center text-center space-y-4 relative">
-
-
-
-    {/* 시계만 노란색 */}
-    <Clock className="w-10 h-10 text-yellow-400" />
-
-    <p className="text-zinc-300 font-black text-lg">답변 대기 중입니다</p>
-    <p className="text-zinc-500 text-sm">운영자가 확인 후 답변을 남길 예정입니다.</p>
+          </div>
+        ) : (
+          <div className="bg-zinc-800/40 border border-zinc-700 rounded-2xl p-10 flex flex-col items-center gap-3 text-center">
+            <Clock className="w-8 h-8 text-yellow-400" />
+            <p className="font-black text-zinc-200">답변 대기 중</p>
+            <p className="text-sm text-zinc-500">
+              운영자가 확인 후 답변을 남길 예정입니다
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
   </div>
 )}
 
-
-
-
-
-
-              </div>
-            </div>
-          )}
         </>
       ) : (
         /* 1-3. 환불 요청 섹션 */
