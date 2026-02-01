@@ -12,7 +12,6 @@ import {
   sendEmailVerification
 } from "firebase/auth";
 
-import { useEffect } from "react";
 
 
 interface LoginModalProps {
@@ -20,12 +19,8 @@ interface LoginModalProps {
   onLoginSuccess: () => void;
 }
 
-const FROM_APP_KEY = "NOGGANG_FROM_APP";
-const fromApp = localStorage.getItem(FROM_APP_KEY) === "1";
-const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLoginSuccess }) => {
 
-const currentUser = auth.currentUser;
-const [justLoggedIn, setJustLoggedIn] = useState(false);
+const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLoginSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -103,7 +98,6 @@ await setDoc(
 );
 
 onLoginSuccess();
-setJustLoggedIn(true);
 
   } catch (err: any) {
     setError(err.message || "로그인 실패");
@@ -121,49 +115,8 @@ setJustLoggedIn(true);
       ></div>
       
       <div className="relative w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8 shadow-2xl animate-in zoom-in-95 duration-300">
-       {currentUser && !justLoggedIn && !isRegistering && (
-  <div className="text-center space-y-6">
-    <img
-      src="/logo.png"
-      alt="Logo"
-      className="mx-auto h-16 object-contain"
-    />
-
-    <h2 className="text-3xl font-black">
-      이미 로그인되어 있습니다
-    </h2>
-
-    <p className="text-zinc-400 leading-relaxed">
-      {fromApp
-        ? "로그인이 완료되었습니다. 잠시 후 프로그램으로 자동으로 돌아갑니다."
-        : "이미 로그인된 계정으로 서비스를 이용 중입니다."}
-    </p>
-
-    <button
-onClick={() => {
-  if (fromApp) {
-    // 앱에서 온 경우 → 아무것도 안 하고 닫기
-    onClose();
-  } else {
-    // 웹 로그인 상태 → 홈으로 복귀
-    localStorage.removeItem(FROM_APP_KEY);
-    onClose();
-    window.history.replaceState({}, "", "/");
-  }
-}}
-      className="w-full py-4 bg-yellow-400 text-black font-black rounded-xl hover:bg-yellow-300 transition"
-    >
-      확인
-    </button>
-  </div>
-)}
-
-        <button
-onClick={() => {
-  localStorage.removeItem(FROM_APP_KEY);
-  onClose();
-  window.history.replaceState({}, "", "/");
-}}
+        <button 
+          onClick={onClose}
           className="absolute top-6 right-6 p-2 text-zinc-500 hover:text-white transition-colors"
         >
           <X className="w-6 h-6" />
@@ -194,8 +147,7 @@ onClick={() => {
   </div>
 )}
 
-       {!currentUser && (
-  <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {error && <p className="text-red-400 text-sm text-center">{error}</p>}
 
           <div className="space-y-1.5">
@@ -258,7 +210,6 @@ onClick={() => {
             )}
           </button>
         </form>
-        )}
 
         <div className="mt-10 pt-6 border-t border-zinc-800 text-center">
           <p className="text-zinc-500 text-sm">
@@ -285,8 +236,9 @@ onClick={async () => {
   }
 
   // 2) 로그인 성공 UI 먼저 처리
-setJustLoggedIn(true);
-onLoginSuccess();
+  onLoginSuccess();
+  onClose();
+
   // 3) Firestore 동기화 (실패해도 알림/로그인 영향 없음)
   try {
     const uid = cred.user.uid;
@@ -324,16 +276,8 @@ const res = await fetch("/api/auth/custom-token", {
 
 const { customToken } = await res.json();
 
-if (fromApp) {
-  localStorage.removeItem(FROM_APP_KEY);
-  window.location.href =
-    `noggang://auth?token=${encodeURIComponent(customToken)}`;
-  return;
-}
-
-// 웹 로그인인 경우 → 그냥 닫고 홈 유지
-onClose();
-
+window.location.href =
+  `noggang://auth?token=${encodeURIComponent(customToken)}`;
 
 }}
 
