@@ -267,7 +267,7 @@ onClick={async () => {
   }
 const idToken = await cred.user.getIdToken();
 
-const res = await fetch("/auth/custom-token", {
+const res = await fetch("/api/auth/custom-token", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ idToken }),
