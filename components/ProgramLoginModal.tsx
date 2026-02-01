@@ -43,7 +43,7 @@ const ProgramLoginModal: React.FC = () => {
     setIsAlreadyLoggedIn(true);
 
     const redirectTimer = setTimeout(async () => {
-const idToken = await auth.currentUser!.getIdToken();
+const idToken = await auth.currentUser!.getIdToken(true);
 await redirectWithCustomToken(idToken);
     }, 5000);
 
@@ -63,7 +63,7 @@ await redirectWithCustomToken(idToken);
 
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-const idToken = await result.user.getIdToken();
+const idToken = await result.user.getIdToken(true);
 await redirectWithCustomToken(idToken);
     } catch {
       setError("Google 로그인에 실패했습니다. 다시 시도해주세요.");
