@@ -11,7 +11,8 @@ import SupportCenter from "./components/SupportCenter";
 import AdminSupport from "./components/AdminSupport";
 import MyPage from "./components/MyPage";
 import LoginModal from "./components/LoginModal";
-
+import ProgramGoogleAuth from "./components/ProgramGoogleAuth";
+import ProgramAuthCallback from "./components/ProgramAuthCallback";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "./src/firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -79,17 +80,23 @@ const App: React.FC = () => {
           onSupportReset={() => setSupportResetKey((k) => k + 1)}
         />
 
-        <main className="flex-1 p-8 md:p-12">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Dashboard
-                  onSelectTool={(id) => console.log("Tool selected:", id)}
-                  onGoDownload={() => {}}
-                />
-              }
-            />
+<main className="flex-1 p-8 md:p-12">
+  <Routes>
+
+    {/* 🔴 프로그램 전용 로그인 (반드시 최상단) */}
+    <Route path="/auth/google" element={<ProgramGoogleAuth />} />
+    <Route path="/auth/callback" element={<ProgramAuthCallback />} />
+
+    <Route
+      path="/"
+      element={
+        <Dashboard
+          onSelectTool={(id) => console.log("Tool selected:", id)}
+          onGoDownload={() => {}}
+        />
+      }
+    />
+
 
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/guide" element={<Guide />} />
