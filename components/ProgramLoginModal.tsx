@@ -45,7 +45,7 @@ const ProgramLoginModal: React.FC = () => {
     const redirectTimer = setTimeout(async () => {
 const idToken = await auth.currentUser!.getIdToken(true);
 await redirectWithCustomToken(idToken);
-    }, 5000);
+    }, 3000);
 
     return () => {
       clearTimeout(redirectTimer);
