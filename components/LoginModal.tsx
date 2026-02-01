@@ -279,9 +279,8 @@ onClick={async () => {
   }
 
   // 2) 로그인 성공 UI 먼저 처리
-  onLoginSuccess();
-  onClose();
 setJustLoggedIn(true);
+onLoginSuccess();
   // 3) Firestore 동기화 (실패해도 알림/로그인 영향 없음)
   try {
     const uid = cred.user.uid;
@@ -319,8 +318,10 @@ const res = await fetch("/api/auth/custom-token", {
 
 const { customToken } = await res.json();
 
-window.location.href =
-  `noggang://auth?token=${encodeURIComponent(customToken)}`;
+if (fromApp) {
+  window.location.href =
+    `noggang://auth?token=${encodeURIComponent(customToken)}`;
+}
 
 }}
 
