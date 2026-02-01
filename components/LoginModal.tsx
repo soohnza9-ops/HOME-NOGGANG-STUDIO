@@ -13,18 +13,16 @@ import {
 } from "firebase/auth";
 
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+
 
 interface LoginModalProps {
   onClose: () => void;
   onLoginSuccess: () => void;
 }
 
-
+const FROM_APP_KEY = "NOGGANG_FROM_APP";
+const fromApp = localStorage.getItem(FROM_APP_KEY) === "1";
 const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLoginSuccess }) => {
-  const location = useLocation();
-const params = new URLSearchParams(location.search);
-const fromApp = params.get("from") === "app";
 
 const currentUser = auth.currentUser;
 const [justLoggedIn, setJustLoggedIn] = useState(false);
@@ -123,7 +121,7 @@ setJustLoggedIn(true);
       ></div>
       
       <div className="relative w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8 shadow-2xl animate-in zoom-in-95 duration-300">
-       {currentUser && !justLoggedIn && (
+       {currentUser && !justLoggedIn && !isRegistering && (
   <div className="text-center space-y-6">
     <img
       src="/logo.png"
@@ -142,9 +140,16 @@ setJustLoggedIn(true);
     </p>
 
     <button
-     onClick={() => {
-  onClose();
-  window.history.replaceState({}, "", "/");
+onClick={() => {
+  if (fromApp) {
+    // 앱에서 온 경우 → 아무것도 안 하고 닫기
+    onClose();
+  } else {
+    // 웹 로그인 상태 → 홈으로 복귀
+    localStorage.removeItem(FROM_APP_KEY);
+    onClose();
+    window.history.replaceState({}, "", "/");
+  }
 }}
       className="w-full py-4 bg-yellow-400 text-black font-black rounded-xl hover:bg-yellow-300 transition"
     >
@@ -154,10 +159,11 @@ setJustLoggedIn(true);
 )}
 
         <button
-  onClick={() => {
-    onClose();
-    window.history.replaceState({}, "", "/");
-  }}
+onClick={() => {
+  localStorage.removeItem(FROM_APP_KEY);
+  onClose();
+  window.history.replaceState({}, "", "/");
+}}
           className="absolute top-6 right-6 p-2 text-zinc-500 hover:text-white transition-colors"
         >
           <X className="w-6 h-6" />
@@ -319,9 +325,15 @@ const res = await fetch("/api/auth/custom-token", {
 const { customToken } = await res.json();
 
 if (fromApp) {
+  localStorage.removeItem(FROM_APP_KEY);
   window.location.href =
     `noggang://auth?token=${encodeURIComponent(customToken)}`;
+  return;
 }
+
+// 웹 로그인인 경우 → 그냥 닫고 홈 유지
+onClose();
+
 
 }}
 
