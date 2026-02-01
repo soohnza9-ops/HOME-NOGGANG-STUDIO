@@ -10,6 +10,24 @@ import { useNavigate } from "react-router-dom";
 
 const auth = getAuth(app);
 
+async function redirectWithCustomToken(idToken: string) {
+  const res = await fetch(
+    "https://use-ewhxeg3kta-uc.a.run.app/auth/custom-token",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    }
+  );
+
+  const data = await res.json();
+  if (!data.ok || !data.customToken) {
+    throw new Error("CUSTOM_TOKEN_FAILED");
+  }
+
+  window.location.href = `noggang://login?token=${data.customToken}`;
+}
+
 const ProgramLoginModal: React.FC = () => {
   const navigate = useNavigate();
   const startedRef = useRef(false);
@@ -25,8 +43,8 @@ const ProgramLoginModal: React.FC = () => {
     setIsAlreadyLoggedIn(true);
 
     const redirectTimer = setTimeout(async () => {
-      const token = await auth.currentUser!.getIdToken();
-      window.location.href = `noggang://login?token=${token}`;
+const idToken = await auth.currentUser!.getIdToken();
+await redirectWithCustomToken(idToken);
     }, 5000);
 
     return () => {
@@ -45,9 +63,8 @@ const ProgramLoginModal: React.FC = () => {
 
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-      const token = await result.user.getIdToken();
-
-      window.location.href = `noggang://login?token=${token}`;
+const idToken = await result.user.getIdToken();
+await redirectWithCustomToken(idToken);
     } catch {
       setError("Google 로그인에 실패했습니다. 다시 시도해주세요.");
       startedRef.current = false;
