@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-
+import { setDoc, serverTimestamp } from "firebase/firestore";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
@@ -29,6 +29,7 @@ const App: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [supportResetKey, setSupportResetKey] = useState(0);
 
+ 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -114,8 +115,7 @@ const App: React.FC = () => {
               }
             />
 
-            {/* 로그인 전용 URL (모달만 띄움) */}
-            <Route path="/login" element={<div />} />
+   
 
             {/* fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
@@ -152,15 +152,16 @@ const App: React.FC = () => {
         </div>
       </footer>
 
-      {/* 로그인 모달 */}
-      {(showLoginModal || location.pathname === "/login") && (
-        <LoginModal
-          onClose={() => setShowLoginModal(false)}
-          onLoginSuccess={() => {
-            setShowLoginModal(false);
-          }}
-        />
-      )}
+{/* 로그인 모달 */}
+{showLoginModal && (
+  <LoginModal
+    onClose={() => setShowLoginModal(false)}
+    onLoginSuccess={() => {
+      setShowLoginModal(false);
+    }}
+  />
+)}
+
     </div>
   );
 };

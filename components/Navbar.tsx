@@ -119,11 +119,12 @@ const Navbar: React.FC<NavbarProps> = ({
             </div>
           ) : (
 <button
-  onClick={() => navigate("/login")}
+  onClick={onLoginClick}
   className="px-6 py-2 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all text-sm"
 >
   로그인
 </button>
+
           )}
         </div>
       </div>
