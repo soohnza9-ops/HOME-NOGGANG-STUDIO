@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   User,
   Calendar,
@@ -13,7 +14,7 @@ import {
   History,
   Zap,
 } from "lucide-react";
-import { Page } from "../types";
+
 
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
@@ -23,7 +24,6 @@ import { createPortal } from "react-dom";
 import { sendPasswordResetEmail } from "firebase/auth";
 
 interface MyPageProps {
-  onNavigate: (page: Page) => void;
   onLogout: () => void;
 }
 
@@ -112,7 +112,9 @@ if (!(window as any).NOGGANG_DEVICE) {
   };
 }
 
-const MyPage: React.FC<MyPageProps> = ({ onNavigate, onLogout }) => {
+const MyPage: React.FC<MyPageProps> = ({ onLogout }) => {
+  const navigate = useNavigate();
+
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [userDoc, setUserDoc] = useState<UserDoc | null>(null);
@@ -405,7 +407,7 @@ const emailLocked = userDoc?.emailLocked === true;
 
                 <div className="flex flex-col gap-3 min-w-[200px]">
                   <button
-                    onClick={() => onNavigate(Page.PRICING)}
+                    onClick={() => navigate("/pricing")}
                     className="w-full py-4 bg-yellow-400 text-black font-black rounded-2xl text-sm hover:bg-yellow-300 transition-all flex items-center justify-center gap-2 shadow-lg shadow-yellow-400/10"
                   >
                     요금제 변경 <ArrowRight className="w-4 h-4" />
@@ -581,7 +583,7 @@ const emailLocked = userDoc?.emailLocked === true;
                 </div>
               </div>
 <button
-  onClick={() => onNavigate(Page.SUPPORT)}
+  onClick={() => navigate("/support")}
   className="px-8 py-4 bg-zinc-800 text-zinc-200 font-black rounded-2xl text-sm hover:bg-zinc-700 transition-all flex items-center justify-center gap-3 group"
 >
   문의하기
@@ -760,7 +762,7 @@ try {
     }
 
     await auth.signOut();
-    onNavigate(Page.HOME);
+    navigate("/");
   } finally {
     setDeleting(false);
   }

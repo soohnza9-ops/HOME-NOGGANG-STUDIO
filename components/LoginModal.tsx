@@ -12,7 +12,8 @@ import {
   sendEmailVerification
 } from "firebase/auth";
 
-
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 interface LoginModalProps {
   onClose: () => void;
@@ -21,6 +22,11 @@ interface LoginModalProps {
 
 
 const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLoginSuccess }) => {
+  const location = useLocation();
+const params = new URLSearchParams(location.search);
+const fromApp = params.get("from") === "app";
+
+const currentUser = auth.currentUser;
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -115,6 +121,33 @@ onLoginSuccess();
       ></div>
       
       <div className="relative w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8 shadow-2xl animate-in zoom-in-95 duration-300">
+       {currentUser && (
+  <div className="text-center space-y-6">
+    <img
+      src="/logo.png"
+      alt="Logo"
+      className="mx-auto h-16 object-contain"
+    />
+
+    <h2 className="text-3xl font-black">
+      이미 로그인되어 있습니다
+    </h2>
+
+    <p className="text-zinc-400 leading-relaxed">
+      {fromApp
+        ? "로그인이 완료되었습니다. 잠시 후 프로그램으로 자동으로 돌아갑니다."
+        : "이미 로그인된 계정으로 서비스를 이용 중입니다."}
+    </p>
+
+    <button
+      onClick={onClose}
+      className="w-full py-4 bg-yellow-400 text-black font-black rounded-xl hover:bg-yellow-300 transition"
+    >
+      확인
+    </button>
+  </div>
+)}
+
         <button 
           onClick={onClose}
           className="absolute top-6 right-6 p-2 text-zinc-500 hover:text-white transition-colors"
@@ -147,7 +180,8 @@ onLoginSuccess();
   </div>
 )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+       {!currentUser && (
+  <form onSubmit={handleSubmit} className="space-y-4">
           {error && <p className="text-red-400 text-sm text-center">{error}</p>}
 
           <div className="space-y-1.5">
@@ -210,6 +244,7 @@ onLoginSuccess();
             )}
           </button>
         </form>
+        )}
 
         <div className="mt-10 pt-6 border-t border-zinc-800 text-center">
           <p className="text-zinc-500 text-sm">

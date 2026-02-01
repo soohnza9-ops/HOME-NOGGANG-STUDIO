@@ -94,19 +94,13 @@ const App: React.FC = () => {
             <Route path="/guide" element={<Guide />} />
             <Route path="/download" element={<Download />} />
 
-            <Route
-              path="/mypage"
-              element={
-                authUser ? (
-                  <MyPage
-                    onNavigate={() => {}}
-                    onLogout={() => auth.signOut()}
-                  />
-                ) : (
-                  <Navigate to="/" replace />
-                )
-              }
-            />
+<Route
+  path="/mypage"
+  element={
+<MyPage onLogout={() => auth.signOut()} />
+  }
+/>
+
 
             <Route
               path="/support"

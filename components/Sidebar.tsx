@@ -1,5 +1,5 @@
-import React from 'react';
-import { Page } from '../types';
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   User,
   CreditCard,
@@ -8,67 +8,56 @@ import {
   Download,
   LayoutDashboard,
   ShieldCheck,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface SidebarProps {
-  currentPage: Page;
-  onNavigate: (page: Page) => void;
   isOpen: boolean;
   isAdmin: boolean;
   onSupportReset: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
-  currentPage,
-  onNavigate,
   isOpen,
   isAdmin,
   onSupportReset,
 }) => {
-  const menuItems = [
-    { id: Page.MY_INFO, label: '내정보', icon: User },
-    { id: Page.DASHBOARD, label: 'HOME', icon: LayoutDashboard },
-    { id: Page.PRICING, label: '요금제', icon: CreditCard },
-    { id: Page.GUIDE, label: '사용가이드', icon: BookOpen },
-    { id: Page.SUPPORT, label: '고객센터', icon: Headset },
-    { id: Page.DOWNLOAD, label: '다운로드', icon: Download },
-    ...(isAdmin
-      ? [{ id: Page.ADMIN_SUPPORT, label: '운영자 고객센터', icon: ShieldCheck }]
-      : []),
-  ];
+  const location = useLocation();
+  const navigate = useNavigate();
 
   if (!isOpen) return null;
 
+  const menuItems = [
+    { path: "/mypage", label: "내정보", icon: User },
+    { path: "/", label: "HOME", icon: LayoutDashboard },
+    { path: "/pricing", label: "요금제", icon: CreditCard },
+    { path: "/guide", label: "사용가이드", icon: BookOpen },
+    { path: "/support", label: "고객센터", icon: Headset },
+    { path: "/download", label: "다운로드", icon: Download },
+    ...(isAdmin
+      ? [{ path: "/admin/support", label: "운영자 고객센터", icon: ShieldCheck }]
+      : []),
+  ];
+
   return (
     <aside className="w-64 border-r border-zinc-800 min-h-[calc(100vh-73px)] bg-zinc-950 z-30">
-
-<div
-  className="
-    sticky top-[73px]
-    w-64
-    p-4 flex flex-col gap-2
-    z-40
-  "
->
-
-
+      <div className="sticky top-[73px] w-64 p-4 flex flex-col gap-2 z-40">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = currentPage === item.id;
+          const isActive = location.pathname === item.path;
 
           return (
             <button
-              key={item.id}
+              key={item.path}
               onClick={() => {
-                onNavigate(item.id);
-                if (item.id === Page.SUPPORT) {
+                navigate(item.path);
+                if (item.path === "/support") {
                   onSupportReset();
                 }
               }}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
                 isActive
-                  ? 'bg-yellow-400 text-black shadow-lg shadow-yellow-400/10'
-                  : 'text-zinc-400 hover:text-white hover:bg-zinc-950'
+                  ? "bg-yellow-400 text-black shadow-lg shadow-yellow-400/10"
+                  : "text-zinc-400 hover:text-white hover:bg-zinc-950"
               }`}
             >
               <Icon className="w-5 h-5" />
