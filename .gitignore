@@ -28,3 +28,6 @@ public/download/
 *.exe
 *.msi
 *.zip
+
+# firebase admin private keys
+*.json
