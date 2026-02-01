@@ -276,8 +276,16 @@ const res = await fetch("/api/auth/custom-token", {
 
 const { customToken } = await res.json();
 
-window.location.href =
-  `noggang://auth?token=${encodeURIComponent(customToken)}`;
+// 🔹 앱에서 연 경우만 앱으로 복귀
+if (window.location.protocol === "noggang:") {
+  window.location.href =
+    `noggang://auth?token=${encodeURIComponent(customToken)}`;
+  return;
+}
+
+// 🔹 웹에서는 그냥 로그인 완료 → 모달 닫기
+onClose();
+
 
 }}
 
