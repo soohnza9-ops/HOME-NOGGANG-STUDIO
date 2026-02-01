@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { setDoc, serverTimestamp } from "firebase/firestore";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
@@ -11,18 +10,17 @@ import SupportCenter from "./components/SupportCenter";
 import AdminSupport from "./components/AdminSupport";
 import MyPage from "./components/MyPage";
 import LoginModal from "./components/LoginModal";
-import ProgramGoogleAuth from "./components/ProgramGoogleAuth";
-import ProgramAuthCallback from "./components/ProgramAuthCallback";
+import ProgramLoginModal from "./components/ProgramLoginModal";
+
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "./src/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
 const App: React.FC = () => {
   const location = useLocation();
-const isProgramAuth = location.pathname.startsWith("/auth/");
+  const isProgramAuth = location.pathname === "/auth/google";
+
   const [authUser, setAuthUser] = useState<any>(null);
-  const [userPlan, setUserPlan] = useState<string | null>(null);
-  const [userStatus, setUserStatus] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
 
@@ -30,13 +28,10 @@ const isProgramAuth = location.pathname.startsWith("/auth/");
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [supportResetKey, setSupportResetKey] = useState(0);
 
- 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         setAuthUser(null);
-        setUserPlan(null);
-        setUserStatus(null);
         setIsAdmin(false);
         setAuthLoading(false);
         return;
@@ -47,8 +42,6 @@ const isProgramAuth = location.pathname.startsWith("/auth/");
       const snap = await getDoc(doc(db, "users", user.uid));
       if (snap.exists()) {
         const data = snap.data();
-        setUserPlan(data.plan ?? null);
-        setUserStatus(data.status ?? null);
         setIsAdmin(data.isAdmin === true);
       }
 
@@ -63,78 +56,63 @@ const isProgramAuth = location.pathname.startsWith("/auth/");
   }
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
-{!isProgramAuth && (
-  <Navbar
-    currentPath={location.pathname}
-    isLoggedIn={!!authUser}
-    onLoginClick={() => setShowLoginModal(true)}
-    onLogout={() => auth.signOut()}
-    onToggleSidebar={() => setIsSidebarOpen((v) => !v)}
-  />
-)}
+    <div className="min-h-screen bg-black text-white overflow-x-hidden relative">
+      {/* ✅ 항상 렌더 (뒤 화면 유지용) */}
+      <Navbar
+        currentPath={location.pathname}
+        isLoggedIn={!!authUser}
+        onLoginClick={() => setShowLoginModal(true)}
+        onLogout={() => auth.signOut()}
+        onToggleSidebar={() => setIsSidebarOpen((v) => !v)}
+      />
 
       <div className="flex max-w-[1600px] mx-auto min-h-[calc(100vh-73px)]">
-{!isProgramAuth && (
-  <Sidebar
-    currentPath={location.pathname}
-    isOpen={isSidebarOpen}
-    isAdmin={isAdmin}
-    onSupportReset={() => setSupportResetKey((k) => k + 1)}
-  />
-)}
-
-<main className="flex-1 p-8 md:p-12">
-  <Routes>
-
-    {/* 🔴 프로그램 전용 로그인 (반드시 최상단) */}
-    <Route path="/auth/google" element={<ProgramGoogleAuth />} />
-
-
-    <Route
-      path="/"
-      element={
-        <Dashboard
-          onSelectTool={(id) => console.log("Tool selected:", id)}
-          onGoDownload={() => {}}
+        <Sidebar
+          currentPath={location.pathname}
+          isOpen={isSidebarOpen}
+          isAdmin={isAdmin}
+          onSupportReset={() => setSupportResetKey((k) => k + 1)}
         />
-      }
-    />
 
+        <main className="flex-1 p-8 md:p-12 relative">
+          <Routes>
+            {/* 🔑 프로그램 로그인 진입점 (페이지 없음, URL 유지용) */}
+            <Route path="/auth/google" element={<></>} />
+
+            <Route
+              path="/"
+              element={
+                <Dashboard
+                  onSelectTool={(id) => console.log("Tool selected:", id)}
+                  onGoDownload={() => {}}
+                />
+              }
+            />
 
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/guide" element={<Guide />} />
             <Route path="/download" element={<Download />} />
-
-<Route
-  path="/mypage"
-  element={
-<MyPage onLogout={() => auth.signOut()} />
-  }
-/>
-
-
+            <Route
+              path="/mypage"
+              element={<MyPage onLogout={() => auth.signOut()} />}
+            />
             <Route
               path="/support"
               element={<SupportCenter key={supportResetKey} />}
             />
-
             <Route
               path="/admin/support"
-              element={
-                isAdmin ? <AdminSupport /> : <Navigate to="/" replace />
-              }
+              element={isAdmin ? <AdminSupport /> : <Navigate to="/" replace />}
             />
 
-   
-
-            {/* fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+
+          {/* ✅ 프로그램 로그인 오버레이 */}
+          {isProgramAuth && <ProgramLoginModal />}
         </main>
       </div>
 
-{!isProgramAuth && (
       <footer className="border-t border-zinc-800 py-12 pt-20">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-3">
@@ -162,18 +140,15 @@ const isProgramAuth = location.pathname.startsWith("/auth/");
             </a>
           </div>
         </div>
-      </footer>)}
+      </footer>
 
-{/* 로그인 모달 */}
-{!isProgramAuth && showLoginModal && (
-  <LoginModal
-    onClose={() => setShowLoginModal(false)}
-    onLoginSuccess={() => {
-      setShowLoginModal(false);
-    }}
-  />
-)}
-
+      {/* 웹 로그인 모달 */}
+      {showLoginModal && (
+        <LoginModal
+          onClose={() => setShowLoginModal(false)}
+          onLoginSuccess={() => setShowLoginModal(false)}
+        />
+      )}
     </div>
   );
 };
