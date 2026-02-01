@@ -27,6 +27,7 @@ const params = new URLSearchParams(location.search);
 const fromApp = params.get("from") === "app";
 
 const currentUser = auth.currentUser;
+const [justLoggedIn, setJustLoggedIn] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -104,6 +105,7 @@ await setDoc(
 );
 
 onLoginSuccess();
+setJustLoggedIn(true);
 
   } catch (err: any) {
     setError(err.message || "로그인 실패");
@@ -121,7 +123,7 @@ onLoginSuccess();
       ></div>
       
       <div className="relative w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8 shadow-2xl animate-in zoom-in-95 duration-300">
-       {currentUser && (
+       {currentUser && !justLoggedIn && (
   <div className="text-center space-y-6">
     <img
       src="/logo.png"
@@ -140,7 +142,10 @@ onLoginSuccess();
     </p>
 
     <button
-      onClick={onClose}
+     onClick={() => {
+  onClose();
+  window.history.replaceState({}, "", "/");
+}}
       className="w-full py-4 bg-yellow-400 text-black font-black rounded-xl hover:bg-yellow-300 transition"
     >
       확인
@@ -148,8 +153,11 @@ onLoginSuccess();
   </div>
 )}
 
-        <button 
-          onClick={onClose}
+        <button
+  onClick={() => {
+    onClose();
+    window.history.replaceState({}, "", "/");
+  }}
           className="absolute top-6 right-6 p-2 text-zinc-500 hover:text-white transition-colors"
         >
           <X className="w-6 h-6" />
@@ -273,7 +281,7 @@ onClick={async () => {
   // 2) 로그인 성공 UI 먼저 처리
   onLoginSuccess();
   onClose();
-
+setJustLoggedIn(true);
   // 3) Firestore 동기화 (실패해도 알림/로그인 영향 없음)
   try {
     const uid = cred.user.uid;
