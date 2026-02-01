@@ -11,13 +11,14 @@ import AdminSupport from "./components/AdminSupport";
 import MyPage from "./components/MyPage";
 import LoginModal from "./components/LoginModal";
 import ProgramLoginModal from "./components/ProgramLoginModal";
-
+import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "./src/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
 const App: React.FC = () => {
   const location = useLocation();
+    const navigate = useNavigate();
   const isProgramAuth = location.pathname === "/auth/google";
 
   const [authUser, setAuthUser] = useState<any>(null);
@@ -79,15 +80,24 @@ const App: React.FC = () => {
             {/* 🔑 프로그램 로그인 진입점 (페이지 없음, URL 유지용) */}
             <Route path="/auth/google" element={<></>} />
 
-            <Route
-              path="/"
-              element={
-                <Dashboard
-                  onSelectTool={(id) => console.log("Tool selected:", id)}
-                  onGoDownload={() => {}}
-                />
-              }
-            />
+<Route
+  path="/"
+  element={
+    <Dashboard
+      onSelectTool={(id) => {
+        if (id === "video") {
+          window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+          navigate("/guide");
+        }
+      }}
+      onGoDownload={() => {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+        navigate("/download");
+      }}
+    />
+  }
+/>
+
 
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/guide" element={<Guide />} />
