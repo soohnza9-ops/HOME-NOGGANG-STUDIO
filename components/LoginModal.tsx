@@ -265,8 +265,20 @@ onClick={async () => {
   } catch (e) {
     console.warn("Firestore sync failed:", e);
   }
-    const idToken = await cred.user.getIdToken();
-  window.location.href = `noggang://auth?token=${idToken}`;
+const idToken = await cred.user.getIdToken();
+
+const res = await fetch("/auth/custom-token", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ idToken }),
+});
+
+
+const { customToken } = await res.json();
+
+window.location.href =
+  `noggang://auth?token=${encodeURIComponent(customToken)}`;
+
 }}
 
   className="w-full py-3 bg-white text-black font-bold rounded-xl text-sm hover:bg-zinc-100 transition-all flex items-center justify-center gap-3"
