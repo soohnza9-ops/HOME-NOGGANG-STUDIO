@@ -31,3 +31,4 @@ public/download/
 
 # firebase admin private keys
 *.json
+!vercel.json
