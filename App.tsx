@@ -19,7 +19,7 @@ import { doc, getDoc } from "firebase/firestore";
 
 const App: React.FC = () => {
   const location = useLocation();
-
+const isProgramAuth = location.pathname.startsWith("/auth/");
   const [authUser, setAuthUser] = useState<any>(null);
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [userStatus, setUserStatus] = useState<string | null>(null);
@@ -64,28 +64,32 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
-      <Navbar
-        currentPath={location.pathname}
-        isLoggedIn={!!authUser}
-        onLoginClick={() => setShowLoginModal(true)}
-        onLogout={() => auth.signOut()}
-        onToggleSidebar={() => setIsSidebarOpen((v) => !v)}
-      />
+{!isProgramAuth && (
+  <Navbar
+    currentPath={location.pathname}
+    isLoggedIn={!!authUser}
+    onLoginClick={() => setShowLoginModal(true)}
+    onLogout={() => auth.signOut()}
+    onToggleSidebar={() => setIsSidebarOpen((v) => !v)}
+  />
+)}
 
       <div className="flex max-w-[1600px] mx-auto min-h-[calc(100vh-73px)]">
-        <Sidebar
-          currentPath={location.pathname}
-          isOpen={isSidebarOpen}
-          isAdmin={isAdmin}
-          onSupportReset={() => setSupportResetKey((k) => k + 1)}
-        />
+{!isProgramAuth && (
+  <Sidebar
+    currentPath={location.pathname}
+    isOpen={isSidebarOpen}
+    isAdmin={isAdmin}
+    onSupportReset={() => setSupportResetKey((k) => k + 1)}
+  />
+)}
 
 <main className="flex-1 p-8 md:p-12">
   <Routes>
 
     {/* 🔴 프로그램 전용 로그인 (반드시 최상단) */}
     <Route path="/auth/google" element={<ProgramGoogleAuth />} />
-    <Route path="/auth/callback" element={<ProgramAuthCallback />} />
+
 
     <Route
       path="/"
@@ -130,6 +134,7 @@ const App: React.FC = () => {
         </main>
       </div>
 
+{!isProgramAuth && (
       <footer className="border-t border-zinc-800 py-12 pt-20">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-3">
@@ -157,10 +162,10 @@ const App: React.FC = () => {
             </a>
           </div>
         </div>
-      </footer>
+      </footer>)}
 
 {/* 로그인 모달 */}
-{showLoginModal && (
+{!isProgramAuth && showLoginModal && (
   <LoginModal
     onClose={() => setShowLoginModal(false)}
     onLoginSuccess={() => {
