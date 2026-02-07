@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "./src/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import NoticePage from "./components/NoticePage";
+import AdminNoticePage from "./components/AdminNoticePage";
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -98,7 +100,7 @@ const App: React.FC = () => {
   }
 />
 
-
+<Route path="/notice" element={<NoticePage />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/guide" element={<Guide />} />
             <Route path="/download" element={<Download />} />
@@ -114,6 +116,8 @@ const App: React.FC = () => {
               path="/admin/support"
               element={isAdmin ? <AdminSupport /> : <Navigate to="/" replace />}
             />
+
+<Route path="/admin/notice" element={<AdminNoticePage />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

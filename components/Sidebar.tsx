@@ -8,6 +8,7 @@ import {
   Download,
   LayoutDashboard,
   ShieldCheck,
+  Bell,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -31,10 +32,14 @@ const Sidebar: React.FC<SidebarProps> = ({
     { path: "/", label: "HOME", icon: LayoutDashboard },
     { path: "/pricing", label: "요금제", icon: CreditCard },
     { path: "/guide", label: "사용가이드", icon: BookOpen },
+      { path: "/notice", label: "공지사항", icon: Bell },
     { path: "/support", label: "고객센터", icon: Headset },
     { path: "/download", label: "다운로드", icon: Download },
     ...(isAdmin
-      ? [{ path: "/admin/support", label: "운영자 고객센터", icon: ShieldCheck }]
+        ? [
+      { path: "/admin/support", label: "운영자 고객센터", icon: ShieldCheck },
+      { path: "/admin/notice", label: "공지 등록", icon: Bell },
+    ]
       : []),
   ];
 
