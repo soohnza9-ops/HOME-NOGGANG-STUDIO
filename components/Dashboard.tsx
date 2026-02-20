@@ -152,7 +152,7 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
             <span className="text-yellow-400">AI 크리에이티브</span>
           </h1>
          <p className="text-zinc-400 text-base mb-6 leading-relaxed max-w-lg">
-            최신 생성형 AI 기술을 활용하여 당신의 상상력을 현실로 만드세요. 
+            최신 생성형 AI 기술을 활용하여 당신의 상상력을 현실로 만드세요. <br />
             복잡한 툴 없이, 단 한 번의 클릭으로 완성도 높은 콘텐츠를 제작합니다.
           </p>
           <div className="flex flex-wrap gap-4">
