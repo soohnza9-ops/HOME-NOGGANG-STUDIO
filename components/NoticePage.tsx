@@ -1,91 +1,109 @@
-import React, { useState } from "react";
-import { Bell, ChevronDown } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ChevronDown, AlertTriangle } from "lucide-react";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { db } from "../src/firebase";
 
 type Notice = {
-  id: number;
+  id: string;
   date: string;
   title: string;
   content: string;
+  isPinned?: boolean;
+  isVisible?: boolean;
 };
 
-const notices: Notice[] = [
-  {
-    id: 1,
-    date: "2026-02-02",
-    title: "서비스 점검 안내",
-    content:
-      "보다 안정적인 서비스 제공을 위해 서버 점검이 예정되어 있습니다.\n점검 시간 동안 일부 기능이 일시적으로 제한될 수 있습니다.",
-  },
-  {
-    id: 2,
-    date: "2026-01-28",
-    title: "요금제 개편 안내",
-    content:
-      "요금제별 크레딧 정책이 일부 변경되었습니다.\n자세한 내용은 요금제 페이지를 참고해 주세요.",
-  },
-];
-
 const NoticePage: React.FC = () => {
-  const [openId, setOpenId] = useState<number | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [notices, setNotices] = useState<Notice[]>([]);
+
+  useEffect(() => {
+    const fetchNotices = async () => {
+      try {
+        const q = query(
+          collection(db, "notices"),
+          orderBy("createdAt", "desc")
+        );
+
+        const snapshot = await getDocs(q);
+
+        const noticeList: Notice[] = snapshot.docs.map((doc) => {
+          const data = doc.data();
+
+          return {
+            id: doc.id,
+            date: data.createdAt?.toDate
+              ? data.createdAt.toDate().toISOString().slice(0, 10)
+              : "",
+            title: data.title || "",
+            content: data.content || "",
+            isPinned: data.isPinned || false,
+            isVisible: data.isVisible ?? true
+          };
+        });
+
+        // 비공개는 필터링
+        setNotices(noticeList.filter(n => n.isVisible));
+      } catch (error) {
+        console.error("공지사항 불러오기 실패:", error);
+      }
+    };
+
+    fetchNotices();
+  }, []);
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10">
-      {/* 타이틀 */}
-      <div className="flex items-center gap-4 mb-10">
-        <Bell className="w-9 h-9 text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.8)]" />
-        <h1 className="text-3xl font-extrabold text-white">공지사항</h1>
+    <div className="max-w-6xl mx-auto px-6 py-10 text-white space-y-8">
+
+      {/* 상단 타이틀 */}
+      <div className="border-b border-yellow-400/40 pb-4">
+        <h1 className="text-2xl font-bold">공지사항</h1>
       </div>
 
-      <div className="space-y-6">
+      {/* 리스트 */}
+      <div className="space-y-4">
         {notices.map((notice) => {
           const isOpen = openId === notice.id;
 
           return (
             <div
               key={notice.id}
-              className="relative rounded-2xl border border-yellow-400/40 bg-gradient-to-br from-zinc-900 to-zinc-950 overflow-hidden"
+              className="border-l-4 border-yellow-400 bg-zinc-900 rounded-2xl overflow-hidden"
             >
-              {/* 왼쪽 강조 바 */}
-              <div className="absolute left-0 top-0 h-full w-1 bg-yellow-400" />
-
-              {/* 헤더 */}
               <button
-                type="button"
-                onClick={() => setOpenId(isOpen ? null : notice.id)}
-                className="w-full px-8 py-6 text-left"
+                onClick={() =>
+                  setOpenId(isOpen ? null : notice.id)
+                }
+                className="w-full px-6 py-6 flex justify-between items-center"
               >
-                {/* ⭐ 핵심: 카드 높이를 줄이고 내부를 중앙 정렬 */}
-                <div className="flex items-center justify-between gap-6 min-h-[96px]">
-                  {/* 왼쪽 텍스트 */}
-                  <div className="flex flex-col justify-center gap-2 min-w-0 pl-5">
-                    <span className="text-sm text-zinc-400">
-                      {notice.date}
-                    </span>
-                    <span className="text-xl md:text-2xl font-bold text-white break-words">
-                      {notice.title}
-                    </span>
-                  </div>
+                {/* 날짜 */}
+                <div className="w-52 shrink-0 text-sm text-zinc-400">
+                  {notice.date}
+                </div>
 
-                  {/* 오른쪽 영역 */}
-                  <div className="flex items-center gap-4 shrink-0">
-                    <span className="px-3 py-1 text-xs rounded-full bg-yellow-400 text-black font-extrabold whitespace-nowrap">
-                      중요 공지
-                    </span>
-                    <ChevronDown
-                      className={`w-6 h-6 transition-transform duration-300 ${
-                        isOpen
-                          ? "rotate-180 text-yellow-400"
-                          : "text-zinc-400"
-                      }`}
-                    />
+                {/* 제목 */}
+                <div className="flex-1 text-left px-4">
+                  <div className="text-2xl font-extrabold flex items-center gap-3">
+                    {notice.isPinned && (
+                      <AlertTriangle className="w-5 h-5 text-yellow-400" />
+                    )}
+                    {notice.title}
                   </div>
                 </div>
+
+                {/* 화살표 */}
+                <ChevronDown
+                  className={`w-5 h-5 transition-transform ${
+                    isOpen ? "rotate-180 text-yellow-400" : ""
+                  }`}
+                />
               </button>
 
-              {/* 펼침 내용 */}
+              {/* 내용 */}
               {isOpen && (
-                <div className="px-8 pb-8 pt-4 text-base text-zinc-300 leading-relaxed whitespace-pre-line">
-                  {notice.content}
+                <div className="px-6 pb-6 pt-4 border-t border-yellow-400/30">
+                  <div className="text-zinc-300 leading-relaxed whitespace-pre-line">
+                    {notice.content}
+                  </div>
                 </div>
               )}
             </div>

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Check, Shield, CreditCard, X, Zap } from 'lucide-react';
 
 const Pricing: React.FC = () => {
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+
   const [selectedPlan, setSelectedPlan] = useState<string>('pro');
 
   const plans = [
@@ -34,7 +34,7 @@ const Pricing: React.FC = () => {
     {
       id: 'starter',
       name: '스타터',
-      price: billingCycle === 'monthly' ? '29,000' : '23,200',
+      price: '29,000',
       description:(
   <>
     워터마크 제거 및 <br />기본 제작 플랜
@@ -43,7 +43,7 @@ const Pricing: React.FC = () => {
       features: [
         '대본 분석 20회',
         '영상 20개 저장',
-        '대본 6,000자 입력',
+        '대본 20,000자 입력',
         
         '워터마크 없음',
         '성우 전체',
@@ -55,7 +55,7 @@ const Pricing: React.FC = () => {
     {
       id: 'pro',
       name: '프로',
-      price: billingCycle === 'monthly' ? '59,000' : '47,200',
+      price: '59,000',
       description: (
   <>
    
@@ -65,7 +65,7 @@ const Pricing: React.FC = () => {
       features: [
         '대본 분석 50회',
         '영상 50개 저장',
-        '대본 20,000자 입력',
+        '대본 35,000자 입력',
         
         '워터마크 없음',
         '성우 전체',
@@ -78,7 +78,7 @@ const Pricing: React.FC = () => {
     {
       id: 'business',
       name: '비즈니스',
-      price: billingCycle === 'monthly' ? '129,000' : '103,200',
+      price: '129,000',
       description:  (
   <>
    기능 제한 없는 상업용 <br /> 대량 제작 플랜
@@ -88,7 +88,7 @@ const Pricing: React.FC = () => {
       features: [
         '대본 분석 무제한',
         '영상 무제한 저장',
-        '대본 무제한 입력',
+        '대본 50,000자 입력',
         
         '워터마크 없음',
         '성우 전체',
@@ -116,34 +116,7 @@ const Pricing: React.FC = () => {
           프로젝트의 규모에 최적화된 최신 AI 도구들을 제공합니다.
         </p>
         
-        <div className="inline-flex items-center bg-zinc-900/50 backdrop-blur-sm p-1.5 rounded-2xl border border-zinc-800 shadow-xl">
-          <button 
-            onClick={() => setBillingCycle('monthly')}
-            className={`relative px-10 py-3 rounded-xl text-sm font-black transition-all duration-300 ${
-              billingCycle === 'monthly' 
-                ? 'bg-yellow-400 text-black shadow-[0_0_20px_rgba(250,204,21,0.3)]' 
-                : 'text-zinc-500 hover:text-white'
-            }`}
-          >
-            월간 결제
-          </button>
-          <button 
-            onClick={() => setBillingCycle('yearly')}
-            className={`relative px-10 py-3 rounded-xl text-sm font-black transition-all duration-300 flex items-center gap-2 ${
-              billingCycle === 'yearly' 
-                ? 'bg-yellow-400 text-black shadow-[0_0_20px_rgba(250,204,21,0.3)]' 
-                : 'text-zinc-500 hover:text-white'
-            }`}
-          >
-            연간 결제
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold ${
-              billingCycle === 'yearly' ? 'bg-black/10 text-black' : 'bg-yellow-400/10 text-yellow-400'
-            }`}>
-              -20%
-            </span>
-          </button>
-        </div>
-      </div>
+
 
       {/* Pricing Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative pb-10">
@@ -182,7 +155,9 @@ const Pricing: React.FC = () => {
               <div className="mb-10">
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-black tracking-tight">₩{plan.price}</span>
-                  <span className="text-zinc-500 text-sm font-bold">/ {billingCycle === 'monthly' ? '월' : '년'}</span>
+                  <span className="text-zinc-500 text-sm font-bold">
+  / 월
+</span>
                 </div>
               </div>
 

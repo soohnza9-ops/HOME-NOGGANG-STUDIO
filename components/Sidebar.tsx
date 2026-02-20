@@ -38,7 +38,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     ...(isAdmin
         ? [
       { path: "/admin/support", label: "운영자 고객센터", icon: ShieldCheck },
-      { path: "/admin/notice", label: "공지 등록", icon: Bell },
+      { path: "/admin/notice", label: "운영자 공지 등록", icon: Bell },
     ]
       : []),
   ];
