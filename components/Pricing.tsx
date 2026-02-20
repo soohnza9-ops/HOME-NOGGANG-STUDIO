@@ -116,7 +116,7 @@ const Pricing: React.FC = () => {
           프로젝트의 규모에 최적화된 최신 AI 도구들을 제공합니다.
         </p>
         
-
+</div> 
 
       {/* Pricing Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative pb-10">
