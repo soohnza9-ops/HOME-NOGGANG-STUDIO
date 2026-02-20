@@ -13,7 +13,7 @@ const Guide: React.FC = () => {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-4xl mx-auto">
       <div className="mb-16">
-        <h2 className="text-4xl font-black mb-4">사용 설명서</h2>
+        <h2 className="text-4xl font-black mb-4">사용가이드</h2>
         <p className="text-zinc-500">노깡 STUDIO를 200% 활용하기 위한 가이드를 확인하세요.</p>
       </div>
 

@@ -21,20 +21,17 @@ const Pricing: React.FC = () => {
       features: [
         '대본 분석 5회',
         '영상 5개 저장',
-        '대본 3,000자 입력',
-        '워터마크 있음 O',
-        
+        '대본 3,000자 입력',        
         '성우 4종',
-        'BGM 4개',
-        '폰트 1개',
-        
-        '고급 AI 설정 X'
+        '고급 AI 설정 X',
+        '워터마크 ON'
       ],
     },
     {
       id: 'starter',
       name: '스타터',
-      price: '29,000',
+      price: '14,900',
+      originalPrice: '21,300',
       description:(
   <>
     워터마크 제거 및 <br />기본 제작 플랜
@@ -44,18 +41,16 @@ const Pricing: React.FC = () => {
         '대본 분석 20회',
         '영상 20개 저장',
         '대본 20,000자 입력',
-        
-        '워터마크 없음',
         '성우 전체',
-        'BGM 전체',
-        '폰트 30개',
-        '고급 AI 설정 X'
+        '고급 AI 설정 X',
+        '워터마크 OFF'
       ],
     },
     {
       id: 'pro',
       name: '프로',
-      price: '59,000',
+      price: '49,000',
+      originalPrice: '70,000',
       description: (
   <>
    
@@ -66,19 +61,17 @@ const Pricing: React.FC = () => {
         '대본 분석 50회',
         '영상 50개 저장',
         '대본 35,000자 입력',
-        
-        '워터마크 없음',
         '성우 전체',
-        'BGM 전체',
-        '폰트 50개',
-        '고급 AI 설정 O'
+        '고급 AI 설정 O',
+        '워터마크 OFF'
       ],
       isPopular: true,
     },
     {
       id: 'business',
       name: '비즈니스',
-      price: '129,000',
+      price: '69,000',
+      originalPrice: '98,000',
       description:  (
   <>
    기능 제한 없는 상업용 <br /> 대량 제작 플랜
@@ -89,12 +82,11 @@ const Pricing: React.FC = () => {
         '대본 분석 무제한',
         '영상 무제한 저장',
         '대본 50,000자 입력',
-        
-        '워터마크 없음',
         '성우 전체',
         'BGM 전체',
         '폰트 전체',
-        '고급 AI 설정 O'
+        '고급 AI 설정 O',
+        '워터마크 OFF'
       ],
     },
   ];
@@ -153,12 +145,30 @@ const Pricing: React.FC = () => {
               </div>
 
               <div className="mb-10">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black tracking-tight">₩{plan.price}</span>
-                  <span className="text-zinc-500 text-sm font-bold">
-  / 월
-</span>
-                </div>
+<div className="flex flex-col gap-1">
+
+  {plan.originalPrice && (
+    <div className="flex items-center gap-2">
+      <span className="text-yellow-400/80 text-xs font-bold">
+        30%
+      </span>
+      <span className="text-zinc-600 text-sm line-through font-semibold">
+        ₩{plan.originalPrice}
+      </span>
+    </div>
+  )}
+
+  <div className="flex items-end gap-2">
+    <span className="text-4xl font-black tracking-tight text-yellow-400">
+      ₩{plan.price}
+    </span>
+
+    <span className="text-zinc-500 text-sm font-bold mb-1">
+      / 월
+    </span>
+  </div>
+
+</div>
               </div>
 
               <div className="space-y-3 mb-8">

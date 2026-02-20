@@ -19,7 +19,7 @@ import {
 import { collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../src/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-
+import { useNavigate } from "react-router-dom";
 type ViewState = 'list' | 'form' | 'detail';
 type TabState = 'inquiry' | 'refund';
 
@@ -46,6 +46,7 @@ function getStatusUI(status: "open" | "done") {
 }
 
 const SupportCenter: React.FC = () => {
+  const navigate = useNavigate();
   const [view, setView] = useState<ViewState>('list');
   const [selectedType, setSelectedType] = useState("사용 방법");
 const [title, setTitle] = useState("");
@@ -485,15 +486,21 @@ onClick={async () => {
               <h3 className="text-xl font-black">정책 안내</h3>
             </div>
             <div className="flex flex-wrap gap-x-12 gap-y-6">
-              <a href="#" className="text-sm text-zinc-500 hover:text-yellow-400 font-bold transition-colors flex items-center gap-2 group border-b border-transparent hover:border-yellow-400/20 pb-1">
-                환불 규정 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </a>
-              <a href="#" className="text-sm text-zinc-500 hover:text-yellow-400 font-bold transition-colors flex items-center gap-2 group border-b border-transparent hover:border-yellow-400/20 pb-1">
-                이용약관 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </a>
-              <a href="#" className="text-sm text-zinc-500 hover:text-yellow-400 font-bold transition-colors flex items-center gap-2 group border-b border-transparent hover:border-yellow-400/20 pb-1">
-                개인정보 처리방침 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </a>
+
+<button
+  onClick={() => navigate("/legal?type=terms")}
+  className="text-sm text-zinc-500 hover:text-yellow-400 font-bold transition-colors flex items-center gap-2 group border-b border-transparent hover:border-yellow-400/20 pb-1"
+>
+  이용약관
+  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+</button>
+<button
+  onClick={() => navigate("/legal?type=privacy")}
+  className="text-sm text-zinc-500 hover:text-yellow-400 font-bold transition-colors flex items-center gap-2 group border-b border-transparent hover:border-yellow-400/20 pb-1"
+>
+  개인정보 처리방침
+  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+</button>
             </div>
           </section>
         </div>

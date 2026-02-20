@@ -29,7 +29,6 @@ interface MyPageProps {
 
 type Credits = {
   script?: number;
-  asset?: number;
   video?: number;
 };
 
@@ -54,13 +53,13 @@ function planDesc(plan?: string) {
   const p = (plan || "").toLowerCase();
   switch (p) {
     case "free":
-      return "무료 플랜 (일일/월간 제한)";
+      return "무료 플랜";
     case "starter":
-      return "입문용 플랜 (월간 결제)";
+      return "입문용 플랜";
     case "pro":
-      return "크리에이터용 핵심 플랜 (월간 결제)";
+      return "크리에이터용 핵심 플랜";
     case "business":
-      return "비즈니스 플랜 (무제한)";
+      return "비즈니스 플랜";
     default:
       return "요금제 정보";
   }
@@ -114,10 +113,13 @@ if (!(window as any).NOGGANG_DEVICE) {
 
 const MyPage: React.FC<MyPageProps> = ({ onLogout }) => {
   const navigate = useNavigate();
-
+const [couponCode, setCouponCode] = useState("");
+const [applyingCoupon, setApplyingCoupon] = useState(false);
+const [couponResult, setCouponResult] = useState<"success" | "error" | null>(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [userDoc, setUserDoc] = useState<UserDoc | null>(null);
+  const [effectivePlan, setEffectivePlan] = useState("free");
     const [sendingReset, setSendingReset] = useState(false);
     const [showPwResetModal, setShowPwResetModal] = useState(false);
 const [pwResetResult, setPwResetResult] = useState<
@@ -174,10 +176,27 @@ unsubUser = onSnapshot(userRef, async (snap) => {
   return;
 }
 
-  const data = snap.exists() ? (snap.data() as UserDoc) : {};
-  setUserDoc(snap.exists() ? data : null);
 
-  const plan = (data.plan ?? "free").toLowerCase();
+const data = snap.data() as any;
+setUserDoc(data);
+
+
+const now = new Date();
+const trialEndsAt = tsToDate(data.trialEndsAt);
+
+const isTrialActive =
+  data.trialActive === true &&
+  trialEndsAt &&
+  trialEndsAt > now;
+
+// 🔥 trial 중이면 trialPlan을 쓰고
+// 아니면 기존 plan을 씀
+let plan = isTrialActive
+  ? (data.trialPlan ?? data.plan ?? "free")
+  : (data.plan ?? "free");
+
+setEffectivePlan(plan.toLowerCase());
+
 
 // ✅ FREE 플랜이면 서버 status 한 번만 호출
 if (plan === "free") {
@@ -247,7 +266,6 @@ unsubDevice = onSnapshot(deviceRef, (dSnap) => {
 
   setDeviceCredits({
     script: d.credits?.script ?? d.script,
-    asset: d.credits?.asset ?? d.asset,
     video: d.credits?.video ?? d.video,
   });
 
@@ -277,21 +295,27 @@ unsubDevice = onSnapshot(deviceRef, (dSnap) => {
 }, []);
 
 
-  const plan = (userDoc?.plan || "free").toLowerCase();
-const credits =
-  plan === "free"
-    ? deviceCredits
-    : {
-        script: userDoc?.credits?.script,
-        asset: userDoc?.credits?.asset,
-        video: userDoc?.credits?.video,
-      };
+const trialEndsAt = tsToDate(userDoc?.trialEndsAt);
 
+const isTrialActive =
+  userDoc?.trialActive &&
+  trialEndsAt &&
+  trialEndsAt > new Date();
+
+const credits =
+  effectivePlan === "free"
+    ? deviceCredits
+    : isTrialActive
+      ? userDoc?.trialCredits
+      : userDoc?.credits;
 
 const resetAtDate =
-  plan === "free"
+  effectivePlan === "free"
     ? tsToDate(deviceResetAt)
-    : tsToDate(userDoc?.resetAt);
+    : userDoc?.trialActive && userDoc?.trialEndsAt
+      ? tsToDate(userDoc.trialEndsAt)
+      : tsToDate(userDoc?.resetAt);
+
 
   const createdAtDate =
     tsToDate(userDoc?.createdAt) ||
@@ -353,15 +377,17 @@ const emailLocked = userDoc?.emailLocked === true;
                   <div>
                     <div className="flex items-center gap-4 mb-2">
                       <span className="text-5xl font-black text-yellow-400 uppercase tracking-tighter">
-                        {planLabel(plan)}
+                        {planLabel(effectivePlan)}
                       </span>
                       <span className="px-3 py-1 bg-yellow-400/10 text-yellow-400 text-[10px] font-black rounded-full border border-yellow-400/20 uppercase tracking-widest animate-pulse">
                         {statusText}
                       </span>
                     </div>
-                    <p className="text-zinc-400 font-medium text-lg">
-                      {planDesc(plan)}
-                    </p>
+<p className="text-zinc-400 font-medium text-lg">
+  {userDoc?.trialActive
+    ? "쿠폰 사용중 (체험 기간)"
+    : planDesc(effectivePlan)}
+</p>
                     <p className="text-zinc-500 text-sm mt-2 flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
                       다음 리셋 예정일:{" "}
@@ -370,7 +396,7 @@ const emailLocked = userDoc?.emailLocked === true;
                       </span>
                     </p>
 
-                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="bg-black/20 border border-zinc-800/60 rounded-2xl p-4">
                         <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">
                           대본분석
@@ -379,14 +405,7 @@ const emailLocked = userDoc?.emailLocked === true;
   {limit3(credits.script)}
 </div>
                       </div>
-                      <div className="bg-black/20 border border-zinc-800/60 rounded-2xl p-4">
-                        <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">
-                          에셋저장
-                        </div>
-<div className="text-2xl font-black text-zinc-100 mt-1">
-  {limit3(credits.asset)}
-</div>
-                      </div>
+
                       <div className="bg-black/20 border border-zinc-800/60 rounded-2xl p-4">
                         <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">
                           영상저장
@@ -525,6 +544,93 @@ const emailLocked = userDoc?.emailLocked === true;
             </div>
           </section>
 
+
+{/* 🔥 쿠폰 입력 */}
+<section className="bg-gradient-to-r from-zinc-900 to-zinc-800/50 border border-yellow-400/20 rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative overflow-hidden group">
+  <div className="flex items-center gap-3 mb-8">
+    <div className="w-10 h-10 bg-yellow-400/10 rounded-xl flex items-center justify-center text-yellow-400">
+      <Zap className="w-5 h-5" />
+    </div>
+    <h3 className="text-xl font-black text-white">쿠폰 등록</h3>
+  </div>
+
+  <div className="flex flex-col sm:flex-row gap-4">
+    <input
+      type="text"
+      value={couponCode}
+      onChange={(e) => setCouponCode(e.target.value)}
+      placeholder="쿠폰 코드를 입력하세요"
+      className="flex-1 bg-black border border-zinc-700 rounded-2xl px-5 py-4 text-white placeholder:text-zinc-500"
+    />
+
+    <button
+      disabled={!couponCode || applyingCoupon}
+      onClick={async () => {
+        if (!couponCode) return;
+
+        setApplyingCoupon(true);
+        setCouponResult(null);
+
+        try {
+          const user = auth.currentUser;
+          if (!user) throw new Error();
+
+          const token = await user.getIdToken();
+
+const deviceApi = (window as any).NOGGANG_DEVICE;
+const deviceId = await deviceApi.get();
+
+const res = await fetch(
+  "https://us-central1-noggang-studio.cloudfunctions.net/use/apply-coupon",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      code: couponCode,
+      deviceId,
+    }),
+  }
+);
+
+
+          const json = await res.json();
+
+          if (!res.ok || json.ok !== true) {
+            setCouponResult("error");
+            return;
+          }
+
+          setCouponResult("success");
+          setCouponCode("");
+        } catch {
+          setCouponResult("error");
+        } finally {
+          setApplyingCoupon(false);
+        }
+      }}
+      className="px-8 py-4 bg-yellow-400 text-black font-black rounded-2xl hover:bg-yellow-300 transition disabled:opacity-40"
+    >
+      {applyingCoupon ? "적용 중..." : "쿠폰 적용"}
+    </button>
+  </div>
+
+  {couponResult === "success" && (
+    <p className="mt-4 text-green-400 text-sm font-bold">
+      쿠폰이 정상적으로 적용되었습니다.
+    </p>
+  )}
+
+  {couponResult === "error" && (
+    <p className="mt-4 text-red-400 text-sm font-bold">
+      유효하지 않은 쿠폰이거나 이미 사용된 코드입니다.
+    </p>
+  )}
+</section>
+
+
           {/* 3. 결제 내역 */}
           <section className="bg-gradient-to-r from-zinc-900 to-zinc-800/50 border border-yellow-400/20 rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative overflow-hidden group">
             <div className="flex items-center justify-between mb-8">
@@ -561,26 +667,23 @@ const emailLocked = userDoc?.emailLocked === true;
                   </div>
                   고객지원
                 </h3>
-                <div className="flex flex-wrap gap-4 pt-2">
-                  <a
-                    href="#"
-                    className="text-sm text-zinc-500 hover:text-yellow-400 transition-colors font-bold flex items-center gap-1.5 border-b border-transparent hover:border-yellow-400/20 pb-1"
-                  >
-                    환불 규정 <ArrowRight className="w-3 h-3" />
-                  </a>
-                  <a
-                    href="#"
-                    className="text-sm text-zinc-500 hover:text-yellow-400 transition-colors font-bold flex items-center gap-1.5 border-b border-transparent hover:border-yellow-400/20 pb-1"
-                  >
-                    이용약관 <ArrowRight className="w-3 h-3" />
-                  </a>
-                  <a
-                    href="#"
-                    className="text-sm text-zinc-500 hover:text-yellow-400 transition-colors font-bold flex items-center gap-1.5 border-b border-transparent hover:border-yellow-400/20 pb-1"
-                  >
-                    개인정보 처리방침 <ArrowRight className="w-3 h-3" />
-                  </a>
-                </div>
+<div className="flex flex-wrap gap-4 pt-2">
+
+  <button
+    onClick={() => navigate("/legal?type=terms")}
+    className="text-sm text-zinc-500 hover:text-yellow-400 transition-colors font-bold flex items-center gap-1.5 border-b border-transparent hover:border-yellow-400/20 pb-1"
+  >
+    이용약관 <ArrowRight className="w-3 h-3" />
+  </button>
+
+  <button
+    onClick={() => navigate("/legal?type=privacy")}
+    className="text-sm text-zinc-500 hover:text-yellow-400 transition-colors font-bold flex items-center gap-1.5 border-b border-transparent hover:border-yellow-400/20 pb-1"
+  >
+    개인정보 처리방침 <ArrowRight className="w-3 h-3" />
+  </button>
+
+</div>
               </div>
 <button
   onClick={() => navigate("/support")}

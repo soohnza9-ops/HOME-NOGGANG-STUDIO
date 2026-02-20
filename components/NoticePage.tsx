@@ -82,7 +82,7 @@ const NoticePage: React.FC = () => {
 
                 {/* 제목 */}
                 <div className="flex-1 text-left px-4">
-                  <div className="text-2xl font-extrabold flex items-center gap-3">
+                  <div className="text-lg font-semibold flex items-center gap-3">
                     {notice.isPinned && (
                       <AlertTriangle className="w-5 h-5 text-yellow-400" />
                     )}

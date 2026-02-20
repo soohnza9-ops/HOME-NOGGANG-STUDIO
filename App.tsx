@@ -17,6 +17,7 @@ import { auth, db } from "./src/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import NoticePage from "./components/NoticePage";
 import AdminNoticePage from "./components/AdminNoticePage";
+import LegalPage from "./components/LegalPage";
 
 const App: React.FC = () => {
   const location = useLocation();
@@ -118,7 +119,7 @@ const App: React.FC = () => {
             />
 
 <Route path="/admin/notice" element={<AdminNoticePage />} />
-
+<Route path="/legal" element={<LegalPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
 
@@ -127,34 +128,48 @@ const App: React.FC = () => {
         </main>
       </div>
 
-      <footer className="border-t border-zinc-800 py-12 pt-20">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8">
-              <img
-                src="/logo.png"
-                alt="NOGGANG Studio"
-                className="w-full h-full object-contain"
-                draggable={false}
-              />
-            </div>
-            <span className="font-bold text-lg">노깡 STUDIO</span>
-          </div>
+<footer className="border-t border-zinc-800 py-12 pt-20">
+  <div className="max-w-7xl mx-auto px-6">
 
-          <p className="text-zinc-500 text-sm">
-            © 2024 NOGGANG STUDIO. All rights reserved.
-          </p>
+    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-8">
 
-          <div className="flex gap-6 text-sm text-zinc-400">
-            <a href="/terms" className="hover:text-yellow-400">
-              이용약관
-            </a>
-            <a href="/privacy" className="hover:text-yellow-400">
-              개인정보처리방침
-            </a>
-          </div>
+      {/* 🔹 좌측: 로고 */}
+      <div className="flex items-center gap-3 justify-center md:justify-start">
+        <div className="w-8 h-8">
+          <img
+            src="/logo.png"
+            alt="NOGGANG Studio"
+            className="w-full h-full object-contain"
+            draggable={false}
+          />
         </div>
-      </footer>
+        <span className="font-bold text-lg">노깡 STUDIO</span>
+      </div>
+
+      {/* 🔹 중앙: 사업자 정보 */}
+      <div className="text-sm text-zinc-500 text-center space-y-1">
+        <p>상호명: 딥탁시스템 | 대표자: 김정탁 | 사업자등록번호: 460-03-03869 | 통신판매업 신고번호 : 00000000</p>
+        <p>주소: 인천광역시 미추홀구 용현동 627-85 | 전화번호: 070-8098-1565 | 이메일: contact@noggang.com</p>
+      </div>
+
+{/* 🔹 우측: 약관 */}
+<div className="flex gap-6 text-sm text-zinc-400 items-center md:items-end">
+<a href="/legal" className="hover:text-yellow-400">
+  이용약관
+</a>
+<a href="/legal" className="hover:text-yellow-400">
+  개인정보처리방침
+</a>
+</div>
+
+    </div>
+
+    <p className="text-zinc-600 text-xs text-center mt-10">
+      © 2026 NOGGANG STUDIO. All rights reserved.
+    </p>
+
+  </div>
+</footer>
 
       {/* 웹 로그인 모달 */}
       {showLoginModal && (

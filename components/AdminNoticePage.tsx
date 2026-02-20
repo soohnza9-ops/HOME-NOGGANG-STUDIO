@@ -9,11 +9,22 @@ import {
   Trash2
 } from "lucide-react";
 
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  getDocs,
+  query,
+  orderBy,
+  doc,
+  updateDoc,
+  deleteDoc  
+} from "firebase/firestore";
+
 import { db } from "../src/firebase";
 
 type Notice = {
-  id: number;
+  id: string;
   title: string;
   content: string;
   isImportant: boolean;
@@ -22,32 +33,107 @@ type Notice = {
   time: string;
 };
 
-const mockData: Notice[] = [
-  {
-    id: 1,
-    title: "서비스 점검 안내",
-    content: "서버 점검이 예정되어 있습니다.",
-    isImportant: true,
-    isPublic: true,
-    date: "2026-02-02",
-    time: "14:32"
-  }
-];
+type ToggleProps = {
+  value: boolean;
+  onChange: () => void;
+  activeColor: string;
+  labelOn: string;
+  labelOff: string;
+};
+
+const Toggle = ({
+  value,
+  onChange,
+  activeColor,
+  labelOn,
+  labelOff
+}: ToggleProps) => {
+  return (
+    <button
+      onClick={onChange}
+      className="flex items-center gap-3"
+    >
+      <span
+        className={`text-sm font-semibold ${
+          value ? "text-white" : "text-zinc-400"
+        }`}
+      >
+        {value ? labelOn : labelOff}
+      </span>
+
+      <div
+        className={`relative w-12 h-6 rounded-full transition-colors duration-200 ${
+          value ? activeColor : "bg-zinc-700"
+        }`}
+      >
+        <div
+          className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 ${
+            value ? "translate-x-6" : ""
+          }`}
+        />
+      </div>
+    </button>
+  );
+};
+
 
 const AdminNoticePage: React.FC = () => {
-  const [notices, setNotices] = useState<Notice[]>(mockData);
-  const [openId, setOpenId] = useState<number | null>(null);
+  const [notices, setNotices] = useState<Notice[]>([]);
+  const [openId, setOpenId] = useState<string | null>(null);
   const [editNotice, setEditNotice] = useState<Notice | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const createRef = useRef<HTMLDivElement>(null);
-
+const createTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [form, setForm] = useState({
     title: "",
     content: "",
     isImportant: false,
     isPublic: true
   });
+
+  useEffect(() => {
+  if (textareaRef.current) {
+    textareaRef.current.style.height = "auto";
+    textareaRef.current.style.height =
+      textareaRef.current.scrollHeight + "px";
+  }
+}, [editNotice]);
+
+  useEffect(() => {
+  const fetchNotices = async () => {
+    try {
+      const q = query(
+        collection(db, "notices"),
+        orderBy("createdAt", "desc")
+      );
+
+      const snapshot = await getDocs(q);
+
+      const loaded: Notice[] = snapshot.docs.map(doc => {
+        const data = doc.data();
+
+        const createdAt = data.createdAt?.toDate?.() ?? new Date();
+
+        return {
+          id: doc.id, // 🔥 doc.id 사용
+          title: data.title ?? "",
+          content: data.content ?? "",
+          isImportant: data.isPinned ?? false,
+          isPublic: data.isVisible ?? true,
+          date: createdAt.toISOString().slice(0, 10),
+          time: createdAt.toTimeString().slice(0, 5)
+        };
+      });
+
+      setNotices(loaded);
+    } catch (error) {
+      console.error("공지 불러오기 실패:", error);
+    }
+  };
+
+  fetchNotices();
+}, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -69,21 +155,23 @@ const AdminNoticePage: React.FC = () => {
 
     const now = new Date();
 
-    const newNotice: Notice = {
-      id: Date.now(),
+const docRef = await addDoc(collection(db, "notices"), {
+  title: form.title,
+  content: form.content,
+  createdAt: serverTimestamp(),
+  isPinned: form.isImportant,
+  isVisible: form.isPublic
+});
+
+const newNotice: Notice = {
+  id: docRef.id,
       ...form,
       date: now.toISOString().slice(0, 10),
       time: now.toTimeString().slice(0, 5)
     };
 
     try {
-      await addDoc(collection(db, "notices"), {
-        title: form.title,
-        content: form.content,
-        createdAt: serverTimestamp(),
-        isPinned: form.isImportant,
-        isVisible: form.isPublic
-      });
+
     } catch (error) {
       console.error("Firestore 저장 실패:", error);
     }
@@ -106,7 +194,7 @@ const AdminNoticePage: React.FC = () => {
 
       {/* 상단 */}
       <div className="flex justify-between items-center border-b border-yellow-400/40 pb-4">
-        <h1 className="text-2xl font-bold">공지 관리</h1>
+        <h1 className="text-2xl font-bold">운영자 공지 관리</h1>
         <button
           onClick={() => setIsCreating(true)}
           className="flex items-center gap-2 px-6 py-3 bg-yellow-400 text-black font-bold rounded-full hover:opacity-90"
@@ -131,55 +219,42 @@ const AdminNoticePage: React.FC = () => {
             className="w-full bg-zinc-800 p-4 rounded-xl text-lg"
           />
 
-          <textarea
-            rows={5}
-            placeholder="공지 내용"
-            value={form.content}
-            onChange={e =>
-              setForm({ ...form, content: e.target.value })
-            }
-            className="w-full bg-zinc-800 p-4 rounded-xl"
-          />
+<textarea
+  ref={createTextareaRef}
+  placeholder="공지 내용"
+  value={form.content}
+  onChange={e => {
+    const value = e.target.value;
+    setForm({ ...form, content: value });
+
+    e.target.style.height = "auto";
+    e.target.style.height = e.target.scrollHeight + "px";
+  }}
+  className="w-full bg-zinc-800 p-5 rounded-xl resize-none overflow-hidden"
+/>
 
           <div className="flex justify-between items-center">
             <div className="flex gap-4">
 
-              <button
-                onClick={() =>
-                  setForm({ ...form, isImportant: !form.isImportant })
-                }
-                className={`${baseButton} ${
-                  form.isImportant
-                    ? "bg-yellow-400 text-black border-yellow-400"
-                    : "bg-zinc-800 text-yellow-400 border-yellow-400"
-                }`}
-              >
-                <AlertTriangle className="w-4 h-4" />
-                긴급
-              </button>
+<Toggle
+  value={form.isImportant}
+  onChange={() =>
+    setForm({ ...form, isImportant: !form.isImportant })
+  }
+  activeColor="bg-yellow-400"
+  labelOn="🔥 긴급 공지"
+  labelOff="일반 공지"
+/>
 
-              <button
-                onClick={() =>
-                  setForm({ ...form, isPublic: !form.isPublic })
-                }
-                className={`${baseButton} ${
-                  form.isPublic
-                    ? "bg-green-500 text-black border-green-500"
-                    : "bg-red-500 text-white border-red-500"
-                }`}
-              >
-                {form.isPublic ? (
-                  <>
-                    <Eye className="w-4 h-4" />
-                    공개
-                  </>
-                ) : (
-                  <>
-                    <EyeOff className="w-4 h-4" />
-                    비공개
-                  </>
-                )}
-              </button>
+<Toggle
+  value={form.isPublic}
+  onChange={() =>
+    setForm({ ...form, isPublic: !form.isPublic })
+  }
+  activeColor="bg-yellow-400"
+  labelOn="👁 공개"
+  labelOff="🔒 비공개"
+/>
             </div>
 
             <button
@@ -219,11 +294,31 @@ const AdminNoticePage: React.FC = () => {
                   {notice.date} {notice.time}
                 </div>
 
-                <div className="flex-1 text-left px-4">
-                  <div className="text-2xl font-extrabold">
-                    {notice.title}
-                  </div>
-                </div>
+<div className="flex-1 text-left px-4 flex items-center gap-3">
+
+ <div className="text-lg font-semibold">
+    {notice.title}
+  </div>
+
+  {/* 긴급 배지 */}
+  {notice.isImportant && (
+    <span className="text-xs px-3 py-1 rounded-full bg-yellow-400 text-black font-bold">
+      긴급
+    </span>
+  )}
+
+  {/* 공개 / 비공개 배지 */}
+  <span
+    className={`text-xs px-3 py-1 rounded-full font-semibold ${
+      notice.isPublic
+        ? "bg-yellow-500/20 text-yellow-400 border border-yellow-400/40"
+        : "bg-zinc-700 text-zinc-400"
+    }`}
+  >
+    {notice.isPublic ? "공개" : "비공개"}
+  </span>
+
+</div>
 
                 <ChevronDown
                   className={`w-5 h-5 transition-transform ${
@@ -243,91 +338,99 @@ const AdminNoticePage: React.FC = () => {
                     className="w-full bg-zinc-800 p-4 rounded-xl text-lg font-bold"
                   />
 
-                  <textarea
-                    value={editNotice.content}
-                    onChange={e =>
-                      setEditNotice({ ...editNotice, content: e.target.value })
-                    }
-                    rows={4}
-                    className="w-full bg-zinc-800 p-4 rounded-xl"
-                  />
+<textarea
+  ref={textareaRef}
+  value={editNotice.content}
+  onChange={e => {
+    const value = e.target.value;
+    setEditNotice({ ...editNotice, content: value });
+
+    e.target.style.height = "auto";
+    e.target.style.height = e.target.scrollHeight + "px";
+  }}
+  className="w-full bg-zinc-800 p-5 rounded-xl resize-none overflow-hidden"
+/>
 
                   <div className="flex justify-between items-center">
                     <div className="flex gap-4">
 
-                      <button
-                        onClick={() =>
-                          setEditNotice({
-                            ...editNotice,
-                            isImportant: !editNotice.isImportant
-                          })
-                        }
-                        className={`${baseButton} ${
-                          editNotice.isImportant
-                            ? "bg-yellow-400 text-black border-yellow-400"
-                            : "bg-zinc-800 text-yellow-400 border-yellow-400"
-                        }`}
-                      >
-                        <AlertTriangle className="w-4 h-4" />
-                        긴급
-                      </button>
+<Toggle
+  value={editNotice.isImportant}
+  onChange={() =>
+    setEditNotice({
+      ...editNotice,
+      isImportant: !editNotice.isImportant
+    })
+  }
+  activeColor="bg-yellow-400"
+  labelOn="🔥 긴급 공지"
+  labelOff="일반 공지"
+/>
 
-                      <button
-                        onClick={() =>
-                          setEditNotice({
-                            ...editNotice,
-                            isPublic: !editNotice.isPublic
-                          })
-                        }
-                        className={`${baseButton} ${
-                          editNotice.isPublic
-                            ? "bg-green-500 text-black border-green-500"
-                            : "bg-red-500 text-white border-red-500"
-                        }`}
-                      >
-                        {editNotice.isPublic ? (
-                          <>
-                            <Eye className="w-4 h-4" />
-                            공개
-                          </>
-                        ) : (
-                          <>
-                            <EyeOff className="w-4 h-4" />
-                            비공개
-                          </>
-                        )}
-                      </button>
+<Toggle
+  value={editNotice.isPublic}
+  onChange={() =>
+    setEditNotice({
+      ...editNotice,
+      isPublic: !editNotice.isPublic
+    })
+  }
+  activeColor="bg-yellow-400"
+  labelOn="👁 공개"
+  labelOff="🔒 비공개"
+/>
 
                       {/* 삭제 버튼 */}
                       <button
-                        onClick={() => {
-                          setNotices(prev =>
-                            prev.filter(n => n.id !== notice.id)
-                          );
-                          setOpenId(null);
-                          setEditNotice(null);
-                        }}
-                        className="h-12 px-6 rounded-xl font-bold flex items-center gap-2 border bg-red-600 text-white border-red-600 hover:opacity-90"
+onClick={async () => {
+  if (!confirm("정말 삭제하시겠습니까?")) return;
+
+  try {
+    await deleteDoc(doc(db, "notices", notice.id));
+    setNotices(prev =>
+      prev.filter(n => n.id !== notice.id)
+    );
+    setOpenId(null);
+    setEditNotice(null);
+  } catch (error) {
+    console.error("공지 삭제 실패:", error);
+  }
+}}
+                       className="h-8 px-4 text-sm rounded-lg font-semibold flex items-center gap-2 bg-red-600 text-white hover:opacity-90"
                       >
                         <Trash2 className="w-4 h-4" />
                         삭제
                       </button>
                     </div>
+<button
+  onClick={async () => {
+    if (!editNotice) return;
 
-                    <button
-                      onClick={() => {
-                        setNotices(prev =>
-                          prev.map(n =>
-                            n.id === editNotice.id ? editNotice : n
-                          )
-                        );
-                        setOpenId(null);
-                        setEditNotice(null);
-                      }}
-                      className="h-12 px-10 bg-yellow-400 text-black font-extrabold rounded-xl"
-                    >
-                      수정 저장
-                    </button>
+    try {
+      await updateDoc(doc(db, "notices", editNotice.id), {
+        title: editNotice.title,
+        content: editNotice.content,
+        isPinned: editNotice.isImportant,
+        isVisible: editNotice.isPublic
+      });
+
+      setNotices(prev =>
+        prev.map(n =>
+          n.id === editNotice.id ? editNotice : n
+        )
+      );
+
+      setOpenId(null);
+      setEditNotice(null);
+
+    } catch (error) {
+      console.error("공지 수정 실패:", error);
+    }
+  }}
+  className="h-12 px-10 bg-yellow-400 text-black font-extrabold rounded-xl"
+>
+  수정 저장
+</button>
                   </div>
                 </div>
               )}

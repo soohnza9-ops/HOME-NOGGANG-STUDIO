@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { X, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { getFirestore, doc, setDoc,updateDoc, serverTimestamp } from "firebase/firestore";
+import { getFirestore, doc, setDoc, updateDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { sendPasswordResetEmail } from "firebase/auth";
-
+import LegalPage from "./LegalPage";
 import { auth, googleProvider, app } from "../src/firebase";
 const db = getFirestore(app);
 import {
@@ -17,8 +17,8 @@ interface LoginModalProps {
   onLoginSuccess: () => void;
 }
 
-
 const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLoginSuccess }) => {
+  const [legalOpen, setLegalOpen] = useState(false);
   function getAuthErrorMessage(code?: string) {
   switch (code) {
     case "auth/invalid-email":
@@ -48,6 +48,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [agreeTerms, setAgreeTerms] = useState(false);
+
   const [verifyNotice, setVerifyNotice] = useState(false);
 const handlePasswordReset = async () => {
   if (!email) {
@@ -73,25 +75,36 @@ const handlePasswordReset = async () => {
     // ===============================
     // ✅ 회원가입
     // ===============================
-    if (isRegistering) {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
+if (isRegistering) {
+
+  if (!agreeTerms) {
+    setError("이용약관 및 개인정보처리방침에 동의해야 합니다.");
+    setIsLoading(false);
+    return;
+  }
+
+  const cred = await createUserWithEmailAndPassword(auth, email, password);
       await sendEmailVerification(cred.user);
 
       // 🔒 유저 문서 최초 생성 (createdAt 여기서만)
-      await setDoc(doc(db, "users", cred.user.uid), {
-        email: cred.user.email,
-        plan: "free",
-        planExpireAt: null,
-        totalUsage: 0,
-        credits: {
-          asset: 0,
-          script: 0,
-          video: 0,
-        },
-        isAdmin: false,
-        createdAt: serverTimestamp(),
-        lastLoginAt: serverTimestamp(),
-      });
+await setDoc(doc(db, "users", cred.user.uid), {
+  email: cred.user.email,
+  plan: "free",
+  planExpireAt: null,
+  totalUsage: 0,
+  credits: {
+    script: 0,
+    video: 0,
+  },
+  isAdmin: false,
+  createdAt: serverTimestamp(),
+  lastLoginAt: serverTimestamp(),
+agreements: {
+  agreed: true,
+  agreedAt: serverTimestamp(),
+  version: "2026-02-20"
+}
+});
 
       await auth.signOut();
       setVerifyNotice(true);
@@ -207,6 +220,28 @@ onLoginSuccess();
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
+{isRegistering && (
+  <div className="mt-3 text-sm text-zinc-400">
+    <label className="flex items-center gap-2">
+<input
+  type="checkbox"
+  checked={agreeTerms}
+  onChange={(e) => setAgreeTerms(e.target.checked)}
+  className="w-4 h-4 accent-yellow-400"
+/>
+      <span>
+        <button
+          type="button"
+          onClick={() => setLegalOpen(true)}
+          className="underline text-yellow-400"
+        >
+          이용약관 및 개인정보처리방침
+        </button>
+        에 동의합니다 (필수)
+      </span>
+    </label>
+  </div>
+)}
           </div>
 
           {!isRegistering && (
@@ -247,38 +282,71 @@ onLoginSuccess();
 
         <div className="mt-8 flex flex-col gap-3">
 <button
-  onClick={async () => {
-    try {
-      setIsLoading(true);
 
-      const cred = await signInWithPopup(auth, googleProvider);
+onClick={async () => {
+  try {
+    setIsLoading(true);
 
-      await setDoc(
-        doc(db, "users", cred.user.uid),
-        {
-          email: cred.user.email,
-          plan: "free",
-          planExpireAt: null,
-          totalUsage: 0,
-          credits: {
-            asset: 0,
-            script: 0,
-            video: 0,
-          },
-          isAdmin: false,
-          lastLoginAt: serverTimestamp(),
-        },
-        { merge: true }
-      );
+    const cred = await signInWithPopup(auth, googleProvider);
 
-      onLoginSuccess();
-      onClose();
-    } catch {
-      alert("Google 로그인 실패");
-    } finally {
-      setIsLoading(false);
+    const userRef = doc(db, "users", cred.user.uid);
+    const snap = await getDoc(userRef);
+
+    // 🔴 최초 사용자
+    if (!snap.exists()) {
+
+      if (!isRegistering) {
+        // 🔥 로그인 탭에서 최초 사용
+        await auth.signOut();
+
+        alert("최초 사용자는 회원가입 탭에서 Google로 진행해주세요.");
+
+        setIsRegistering(true);  // 🔥 회원가입 탭 전환
+        setIsLoading(false);
+        return;
+      }
+
+      // 🔵 회원가입 탭에서 온 경우만 진행
+      if (!agreeTerms) {
+        await auth.signOut();
+        alert("이용약관 및 개인정보처리방침에 동의해야 합니다.");
+        setIsLoading(false);
+        return;
+      }
+
+      await setDoc(userRef, {
+        email: cred.user.email,
+        plan: "free",
+        planExpireAt: null,
+        totalUsage: 0,
+        credits: { script: 0, video: 0 },
+        isAdmin: false,
+        createdAt: serverTimestamp(),
+        lastLoginAt: serverTimestamp(),
+        agreements: {
+          agreed: true,
+          agreedAt: serverTimestamp(),
+          version: "2026-02-20"
+        }
+      });
+
+    } else {
+      // 🟢 기존 유저
+      await updateDoc(userRef, {
+        lastLoginAt: serverTimestamp()
+      });
     }
-  }}
+
+    onLoginSuccess();
+    onClose();
+
+  } catch {
+    alert("Google 로그인 실패");
+  } finally {
+    setIsLoading(false);
+  }
+}}
+
   className="w-full py-3 bg-white text-black font-bold rounded-xl text-sm hover:bg-zinc-100 transition-all flex items-center justify-center gap-3"
 >
   <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -292,7 +360,24 @@ onLoginSuccess();
 
 
         </div>
+        
       </div>
+    {legalOpen && (
+  <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm">
+    <div className="relative w-full max-w-3xl max-h-[80vh] overflow-y-auto bg-zinc-900 rounded-2xl px-6 pt-3 pb-6 border border-zinc-800">
+      
+      <button
+        onClick={() => setLegalOpen(false)}
+        className="absolute top-4 right-4 text-zinc-400 hover:text-white"
+      >
+        <X className="w-5 h-5" />
+      </button>
+
+      <LegalPage />
+
+    </div>
+  </div>
+)}
     </div>
   );
 };

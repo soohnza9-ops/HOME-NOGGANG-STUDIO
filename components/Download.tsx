@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Apple, Monitor, ChevronRight, Github } from 'lucide-react';
+import { Apple, Monitor, Check, Github } from 'lucide-react';
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../src/firebase";
 import { useEffect, useState } from "react";
@@ -44,8 +44,8 @@ if (!user) {
   setShowLogin(true);
   return;
 }
-    window.location.href =
-      "https://pub-fdaf3ec553274409b02106ec9d124b49.r2.dev/NOGGANG-STUDIO-Setup-0.1.31.exe";
+window.location.href =
+  "https://github.com/soohnza9-ops/NOGGANG-STUDIO/releases/latest/download/NOGGANG-STUDIO-Setup-0.1.88.exe";
   }}
 
   className={`w-full sm:w-auto px-10 py-5 font-black rounded-[2rem] transition-all flex items-center justify-center gap-3 ${
@@ -79,37 +79,39 @@ if (!user) {
         <div className="bg-zinc-900/50 border border-zinc-800 p-10 rounded-[2.5rem] flex items-center justify-between group cursor-pointer hover:border-yellow-400/30 transition-colors">
           <div>
 <span className="text-yellow-400 font-bold text-xs uppercase tracking-widest mb-2 block">
-  Current Version · v0.1.31
+  SECURITY
 </span>
 <h3 className="text-2xl font-black mb-1">
-  전체 버전 보기
+  안전한 다운로드
 </h3>
 <p className="text-zinc-500 text-sm">
-  업데이트 날짜: 2026년 1월 27일
+  공식 서버를 통해서만 파일이 배포됩니다.<br />
+외부 사이트 링크는 제공하지 않습니다.
 </p>
 
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center group-hover:bg-yellow-400 group-hover:text-black transition-all">
-            <ChevronRight className="w-6 h-6" />
-          </div>
+<div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center group-hover:bg-yellow-400 transition-all">
+  <Check className="w-6 h-6 text-yellow-400 group-hover:text-black transition-colors" />
+</div>
         </div>
         
 <div className="bg-zinc-900/50 border border-zinc-800 p-10 rounded-[2.5rem] flex items-center justify-between group cursor-pointer hover:border-yellow-400/30 transition-colors">
   <div>
     <span className="text-yellow-400 font-bold text-xs uppercase tracking-widest mb-2 block">
-      Download Guide
+      UPDATE
     </span>
     <h3 className="text-2xl font-black mb-1">
-      다운로드 방법
+      지속적인 기능 개선
     </h3>
     <p className="text-zinc-500 text-sm">
-      Windows에서 사용해보세요 
+      매달 새로운 기능과 최적화가 추가됩니다.<br />
+사용자 피드백을 적극 반영합니다.
     </p>
   </div>
 
-  <div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center group-hover:bg-yellow-400 group-hover:text-black transition-all">
-    <ChevronRight className="w-6 h-6" />
-  </div>
+<div className="w-12 h-12 rounded-2xl bg-zinc-800 flex items-center justify-center group-hover:bg-yellow-400 transition-all">
+  <Check className="w-6 h-6 text-yellow-400 group-hover:text-black transition-colors" />
+</div>
 </div>
 
       </div>
