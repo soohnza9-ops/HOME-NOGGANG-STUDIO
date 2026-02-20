@@ -149,7 +149,7 @@ const App: React.FC = () => {
       {/* 🔹 중앙: 사업자 정보 */}
       <div className="text-sm text-zinc-500 text-center space-y-1">
         <p>상호명: 딥탁시스템 | 대표자: 김정탁 | 사업자등록번호: 460-03-03869 | 통신판매업 신고번호 : 00000000</p>
-        <p>주소: 인천광역시 미추홀구 용현동 627-85 | 전화번호: 070-8098-1565 | 이메일: contact@noggang.com</p>
+        <p>주소: 인천광역시 미추홀구 용현동 627-85 | 전화번호: 070-8098-1565 | 이메일: noggang.studio@gmail.com</p>
       </div>
 
 {/* 🔹 우측: 약관 */}
