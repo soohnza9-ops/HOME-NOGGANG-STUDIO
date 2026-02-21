@@ -43,7 +43,7 @@ const Navbar: React.FC<NavbarProps> = ({
   ];
 
   return (
-    <nav className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-zinc-800 px-6 py-4">
+    <nav className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-zinc-800 px-4 md:px-6 py-3 md:py-4">
       <div className="max-w-[1600px] mx-auto flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
@@ -65,7 +65,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 draggable={false}
               />
             </div>
-            <span className="font-black text-xl tracking-tighter uppercase">
+            <span className="font-black text-base md:text-xl tracking-tight uppercase">
               노깡 STUDIO
             </span>
           </div>
@@ -98,15 +98,15 @@ const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center gap-3 relative z-40">
               <div
                 onClick={() => navigate("/mypage")}
-                className="flex items-center gap-2 bg-zinc-900 px-3 py-2 rounded-xl border border-zinc-800 cursor-pointer hover:bg-zinc-800 transition relative z-50 pointer-events-auto"
+                className="flex items-center gap-2 bg-zinc-900 px-2 md:px-3 py-2 rounded-xl border border-zinc-800 cursor-pointer hover:bg-zinc-800 transition relative z-50 pointer-events-auto"
               >
                 <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold text-xs">
                   {(user?.email || user?.displayName || "G")[0].toUpperCase()}
                 </div>
 
-                <span className="text-sm font-medium text-zinc-300">
-                  {user?.email || user?.displayName || "Google User"}
-                </span>
+<span className="hidden md:block text-sm font-medium text-zinc-300">
+  {user?.email || user?.displayName || "Google User"}
+</span>
               </div>
 
               <button

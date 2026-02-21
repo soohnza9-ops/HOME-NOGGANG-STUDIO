@@ -139,7 +139,7 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
 
 
 
-        <div className="relative z-10 max-w-2xl ml-6 md:ml-10">
+        <div className="relative z-10 max-w-2xl ml-2 md:ml-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 text-xs font-bold mb-6">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
@@ -147,7 +147,7 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
             </span>
             NEW: 노깡 STUDIO v0.0.90 업데이트 완료
           </div>
-          <h1 className="text-4xl md:text-5xl font-black mb-6 leading-[1.15]">
+          <h1 className="text-2xl md:text-5xl font-black mb-5 leading-snug">
             창작의 한계를 뛰어넘는 <br />
             <span className="text-yellow-400">AI 크리에이티브</span>
           </h1>
@@ -181,7 +181,7 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
 
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mx-4 md:mx-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:p-8 mx-4 md:mx-8">
 
         {tools.map((tool) => {
           const Icon = tool.icon;
@@ -200,7 +200,7 @@ onClick={() => {
 
 
 
-             className={`group relative flex flex-col text-left p-8 bg-zinc-900/70 border border-zinc-700 rounded-[2rem] transition-all duration-500 overflow-hidden ${
+             className={`group relative flex flex-col text-left p-5 md:p-8 bg-zinc-900/70 border border-zinc-700 rounded-[2rem] transition-all duration-500 overflow-hidden ${
 
                 tool.enabled
  ? "hover:border-yellow-400/50 hover:bg-zinc-800/90 hover:-translate-y-1"
@@ -213,7 +213,7 @@ onClick={() => {
                 >
                   <Icon className="w-7 h-7" />
                 </div>
-                <h4 className="text-2xl font-black text-zinc-100 group-hover:text-yellow-400 transition-colors">
+                <h4 className="text-xl md:text-2xl font-extrabold text-zinc-100 group-hover:text-yellow-400 transition-colors">
                   {tool.title}
                 </h4>
               </div>

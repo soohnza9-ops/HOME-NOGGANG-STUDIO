@@ -233,8 +233,8 @@ const newNotice: Notice = {
   className="w-full bg-zinc-800 p-5 rounded-xl resize-none overflow-hidden"
 />
 
-          <div className="flex justify-between items-center">
-            <div className="flex gap-4">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+          <div className="flex flex-wrap gap-3">
 
 <Toggle
   value={form.isImportant}
@@ -259,7 +259,7 @@ const newNotice: Notice = {
 
             <button
               onClick={handleCreate}
-              className="h-12 px-10 bg-yellow-400 text-black font-extrabold rounded-xl"
+              className="w-full md:w-auto py-3 md:h-12 px-6 md:px-10 bg-yellow-400 text-black font-extrabold rounded-xl"
             >
               <Save className="w-4 h-4 inline mr-2" />
               등록
@@ -288,13 +288,13 @@ const newNotice: Notice = {
                     setEditNotice({ ...notice });
                   }
                 }}
-                className="w-full px-6 py-6 flex justify-between items-center"
+                className="w-full px-4 md:px-6 py-5 md:py-6 flex flex-col md:flex-row md:justify-between md:items-center gap-2 md:gap-0"
               >
-                <div className="w-52 shrink-0 text-sm text-zinc-400">
+                <div className="text-xs md:text-sm text-zinc-400 md:w-52 shrink-0">
                   {notice.date} {notice.time}
                 </div>
 
-<div className="flex-1 text-left px-4 flex items-center gap-3">
+<div className="w-full md:flex-1 text-left md:px-4 flex flex-wrap items-center gap-2">
 
  <div className="text-lg font-semibold">
     {notice.title}
@@ -351,8 +351,8 @@ const newNotice: Notice = {
   className="w-full bg-zinc-800 p-5 rounded-xl resize-none overflow-hidden"
 />
 
-                  <div className="flex justify-between items-center">
-                    <div className="flex gap-4">
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                  <div className="flex flex-wrap gap-3">
 
 <Toggle
   value={editNotice.isImportant}
@@ -396,7 +396,7 @@ onClick={async () => {
     console.error("공지 삭제 실패:", error);
   }
 }}
-                       className="h-8 px-4 text-sm rounded-lg font-semibold flex items-center gap-2 bg-red-600 text-white hover:opacity-90"
+                      className="w-full md:w-auto py-2 md:h-8 px-4 text-sm rounded-lg font-semibold flex items-center justify-center gap-2 bg-red-600 text-white hover:opacity-90"
                       >
                         <Trash2 className="w-4 h-4" />
                         삭제
@@ -427,7 +427,7 @@ onClick={async () => {
       console.error("공지 수정 실패:", error);
     }
   }}
-  className="h-12 px-10 bg-yellow-400 text-black font-extrabold rounded-xl"
+  className="w-full md:w-auto py-3 md:h-12 px-6 md:px-10 bg-yellow-400 text-black font-extrabold rounded-xl"
 >
   수정 저장
 </button>

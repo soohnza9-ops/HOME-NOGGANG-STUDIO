@@ -243,13 +243,13 @@ const Pricing: React.FC = () => {
               </p>
             </div>
             
-            <div className="flex flex-nowrap gap-4 overflow-x-auto whitespace-nowrap pb-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-nowrap gap-4 pb-2">
               {[
                 { icon: Shield, color: 'text-blue-400', label: '256비트 암호화' },
                 { icon: CreditCard, color: 'text-yellow-400', label: '모든 국내외 카드' },
                 { icon: Zap, color: 'text-purple-400', label: '간편 결제 지원' }
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 bg-zinc-900/80 px-5 py-3 rounded-2xl border border-zinc-800 transition-all hover:border-zinc-700 group whitespace-nowrap shrink-0">
+                <div key={i} className="flex items-center gap-3 bg-zinc-900/80 px-5 py-3 rounded-2xl border border-zinc-800 transition-all hover:border-zinc-700 group">
 
                   <item.icon className={`w-5 h-5 ${item.color} group-hover:scale-110 transition-transform`} />
                   <span className="text-sm font-bold text-zinc-300">{item.label}</span>

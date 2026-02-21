@@ -88,7 +88,7 @@ setInquiries(sorted);
 }, []);
 
 const [inquiries, setInquiries] = useState<Inquiry[]>([]);
-
+const [editingReplyId, setEditingReplyId] = useState<string | null>(null);
 const handleRegisterReply = async (id: string) => {
   if (!replyText.trim()) return;
 
@@ -99,6 +99,7 @@ const handleRegisterReply = async (id: string) => {
   });
 
   setReplyText("");
+  setEditingReplyId(null); // ✅ 추가
 };
 
 
@@ -350,32 +351,50 @@ return matchSearch && matchType && matchFavorite;
                       <div className="space-y-4">
                        <p className="text-[15px] font-black text-white tracking-wide">운영자 답변</p>
                         
-                        {inq.adminReply ? (
-                          <div className="bg-green-500/5 border border-green-500/20 rounded-2xl p-6 text-zinc-300">
-                            <div className="flex items-center justify-between mb-4">
-                              <p className="text-[10px] font-black text-green-500 uppercase tracking-widest">Sent Reply</p>
-                              <span className="text-[10px] text-zinc-500">{inq.repliedAt}</span>
-                            </div>
-                           <p className="text-sm italic whitespace-pre-wrap">
-  {inq.adminReply}
-</p>
-                          </div>
-                        ) : (
-                          <div className="space-y-3">
-                            <textarea 
-                              rows={4}
-                              value={replyText}
-                              onChange={(e) => setReplyText(e.target.value)}
-                              placeholder="답변 내용을 입력하세요..."
-                              className="w-full bg-black border border-zinc-800 rounded-2xl py-4 px-5 text-white focus:outline-none focus:border-yellow-400/50 transition-colors text-sm resize-none"
-                            ></textarea>
-                            <button 
-                              onClick={() => handleRegisterReply(inq.id)}
-                              className="w-full py-3 bg-yellow-400 text-black font-black rounded-xl hover:bg-yellow-300 transition-all flex items-center justify-center gap-2 text-sm"
-                            >
-                              <Send className="w-4 h-4" /> 답변 등록 및 해결 처리
-                            </button>
-                          </div>
+{inq.adminReply && editingReplyId !== inq.id ? (
+  <div className="bg-green-500/5 border border-green-500/20 rounded-2xl p-6 text-zinc-300">
+    <div className="flex items-center justify-between mb-4">
+      <p className="text-[10px] font-black text-green-500 uppercase tracking-widest">
+        Sent Reply
+      </p>
+
+      <div className="flex items-center gap-4">
+        <span className="text-[10px] text-zinc-500">{inq.repliedAt}</span>
+
+        <button
+          onClick={() => {
+            setEditingReplyId(inq.id);
+            setReplyText(inq.adminReply || "");
+          }}
+          className="text-xs text-yellow-400 hover:underline font-bold"
+        >
+          수정
+        </button>
+      </div>
+    </div>
+
+    <p className="text-sm italic whitespace-pre-wrap">
+      {inq.adminReply}
+    </p>
+  </div>
+) : (
+  <div className="space-y-3">
+    <textarea
+      rows={4}
+      value={replyText}
+      onChange={(e) => setReplyText(e.target.value)}
+      className="w-full bg-black border border-zinc-800 rounded-2xl py-4 px-5 text-white focus:outline-none focus:border-yellow-400/50 transition-colors text-sm resize-none"
+    />
+
+    <button
+      onClick={() => handleRegisterReply(inq.id)}
+      className="w-full py-3 bg-yellow-400 text-black font-black rounded-xl hover:bg-yellow-300 transition-all flex items-center justify-center gap-2 text-sm"
+    >
+      <Send className="w-4 h-4" />
+      {inq.adminReply ? "답변 수정 완료" : "답변 등록 및 해결 처리"}
+    </button>
+  </div>
+
                         )}
                       </div>
                     </div>

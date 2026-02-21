@@ -28,7 +28,7 @@ const App: React.FC = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [supportResetKey, setSupportResetKey] = useState(0);
 
@@ -55,6 +55,21 @@ const App: React.FC = () => {
     return () => unsub();
   }, []);
 
+  useEffect(() => {
+  const handleResize = () => {
+    if (window.innerWidth >= 768) {
+      setIsSidebarOpen(true);
+    } else {
+      setIsSidebarOpen(false);
+    }
+  };
+
+  handleResize(); // 첫 렌더 시 실행
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
   if (authLoading) {
     return <div className="hidden" />;
   }
@@ -70,15 +85,24 @@ const App: React.FC = () => {
         onToggleSidebar={() => setIsSidebarOpen((v) => !v)}
       />
 
-      <div className="flex max-w-[1600px] mx-auto min-h-[calc(100vh-73px)]">
-        <Sidebar
-          currentPath={location.pathname}
-          isOpen={isSidebarOpen}
-          isAdmin={isAdmin}
-          onSupportReset={() => setSupportResetKey((k) => k + 1)}
-        />
+<div className="flex max-w-[1600px] mx-auto relative">
 
-        <main className="flex-1 p-8 md:p-12 relative">
+  {/* 🔥 모바일 오버레이 */}
+  {isSidebarOpen && (
+    <div
+      className="fixed inset-0 bg-black/50 z-30 md:hidden"
+      onClick={() => setIsSidebarOpen(false)}
+    />
+  )}
+
+  <Sidebar
+    currentPath={location.pathname}
+    isOpen={isSidebarOpen}
+    isAdmin={isAdmin}
+    onSupportReset={() => setSupportResetKey((k) => k + 1)}
+  />
+
+  <main className="flex-1 min-w-0 p-6 md:p-12 relative">
           <Routes>
             {/* 🔑 프로그램 로그인 진입점 (페이지 없음, URL 유지용) */}
             <Route path="/auth/google" element={<></>} />

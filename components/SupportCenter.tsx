@@ -158,11 +158,11 @@ useEffect(() => {
 
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
-                    <thead>
+                    <thead className="hidden md:table-header-group">
                     <tr className="border-b border-zinc-700 bg-zinc-800/80">
 <th className="px-8 py-5 text-xs font-black text-zinc-400 uppercase tracking-widest w-40">상태</th>
-<th className="px-12 py-5 text-xs font-black text-zinc-400 uppercase tracking-widest text-left">제목</th>
-<th className="px-8 py-5 text-xs font-black text-zinc-400 uppercase tracking-widest w-36 text-right">작성일</th>
+<th className="px-4 md:px-12 py-4 text-xs font-black text-zinc-400 uppercase tracking-widest text-left">제목</th>
+<th className="hidden md:table-cell px-8 py-5 text-xs font-black text-zinc-400 uppercase tracking-widest text-right">작성일</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -174,7 +174,7 @@ useEffect(() => {
 
                             onClick={() => handleOpenDetail(inquiry)}
                           >
-                            <td className="px-8 py-5 w-40">
+                            <td className="px-3 md:px-8 py-4 w-[110px] md:w-auto">
                               <span
   className={`text-[13px] font-bold px-3.5 py-1.5 rounded-full border whitespace-nowrap inline-flex items-center justify-center ${
 
@@ -188,12 +188,12 @@ useEffect(() => {
 
                               </span>
                             </td>
-                           <td className="px-12 py-5 text-left">
-                              <span className="font-bold text-zinc-200 group-hover:text-yellow-400 transition-colors">
+                           <td className="px-4 md:px-12 py-4 text-left">
+                              <span className="font-bold text-zinc-200 group-hover:text-yellow-400 transition-colors break-words">
                                 {inquiry.title}
                               </span>
                             </td>
-                            <td className="px-8 py-5 w-36 text-right whitespace-nowrap">
+                            <td className="hidden md:table-cell px-8 py-5 text-right whitespace-nowrap">
                               <span className="text-sm text-zinc-400 font-semibold">
 {inquiry.createdAt?.toDate().toLocaleString("ko-KR")}
 </span>
@@ -342,7 +342,7 @@ onClick={async () => {
 
 
       {/* 카드 헤더 */}
-<div className="p-6 flex items-center justify-between border-b border-zinc-800">
+<div className="p-6 border-b border-zinc-800">
   <div className="flex items-center gap-4 flex-wrap">
     <span
       className={`text-xs font-black px-3 py-1.5 rounded-full border shrink-0 ${
@@ -509,4 +509,4 @@ onClick={async () => {
   );
 };
 
-export default SupportCenter;
+export default SupportCenter; 

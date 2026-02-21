@@ -302,12 +302,12 @@ const isTrialActive =
   trialEndsAt &&
   trialEndsAt > new Date();
 
-const credits =
+const credits: Credits =
   effectivePlan === "free"
-    ? deviceCredits
+    ? deviceCredits ?? {}
     : isTrialActive
-      ? userDoc?.trialCredits
-      : userDoc?.credits;
+      ? userDoc?.trialCredits ?? {}
+      : userDoc?.credits ?? {};
 
 const resetAtDate =
   effectivePlan === "free"

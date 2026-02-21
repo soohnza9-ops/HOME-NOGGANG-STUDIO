@@ -44,8 +44,21 @@ const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="w-64 border-r border-zinc-800 min-h-[calc(100vh-73px)] bg-zinc-950 z-30">
-      <div className="sticky top-[73px] w-64 p-4 flex flex-col gap-2 z-40">
+<aside
+  className={`
+    fixed md:static
+    top-0 left-0
+    min-h-screen
+    w-64
+    bg-zinc-950
+    border-r border-zinc-800
+    transform transition-transform duration-300
+    ${isOpen ? "translate-x-0" : "-translate-x-full"}
+    md:translate-x-0
+    z-40
+  `}
+>
+      <div className="h-full w-64 p-4 flex flex-col gap-2 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;

@@ -73,10 +73,10 @@ const NoticePage: React.FC = () => {
                 onClick={() =>
                   setOpenId(isOpen ? null : notice.id)
                 }
-                className="w-full px-6 py-6 flex justify-between items-center"
+                className="w-full px-4 md:px-6 py-5 md:py-6 flex flex-col md:flex-row md:justify-between md:items-center gap-2 md:gap-0"
               >
                 {/* 날짜 */}
-                <div className="w-52 shrink-0 text-sm text-zinc-400">
+                <div className="text-xs md:text-sm text-zinc-400 md:w-52 shrink-0">
                   {notice.date}
                 </div>
 
