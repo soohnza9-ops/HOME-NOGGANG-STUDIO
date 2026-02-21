@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   ShieldCheck, 
   Search, 
@@ -20,7 +19,6 @@ import {
 } from 'lucide-react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../src/firebase";
-import { useEffect } from "react";
 
 interface Inquiry {
   id: string;
@@ -36,18 +34,33 @@ interface Inquiry {
 }
 const AdminSupport: React.FC = () => {
 
-  const [selectedInquiryId, setSelectedInquiryId] = useState<string | null>(null);
-  const [replyText, setReplyText] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-    const [typeFilter, setTypeFilter] = useState<string>("전체");
-  const [showFilter, setShowFilter] = useState(false);
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
+const [selectedInquiryId, setSelectedInquiryId] = useState<string | null>(null);
+const [replyText, setReplyText] = useState('');
+const [searchQuery, setSearchQuery] = useState('');
+const [typeFilter, setTypeFilter] = useState<string>("전체");
+const [showFilter, setShowFilter] = useState(false);
+const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
+const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+const autoResize = () => {
+  if (textareaRef.current) {
+    textareaRef.current.style.height = "auto";
+    textareaRef.current.style.height =
+      textareaRef.current.scrollHeight + "px";
+  }
+};
+
+useEffect(() => {
+  autoResize();
+}, [replyText]);
+
   useEffect(() => {
   const q = query(
     collection(db, "supportTickets"),
     orderBy("createdAt", "desc")
   );
-
   const unsub = onSnapshot(q, (snap) => {
     const arr: Inquiry[] = [];
     snap.forEach((doc) => {
@@ -206,7 +219,7 @@ return matchSearch && matchType && matchFavorite;
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="이메일 또는 제목으로 검색..."
-            className="w-full bg-black border border-zinc-800 rounded-xl py-3 pl-11 pr-4 text-sm focus:outline-none focus:border-yellow-400/50 transition-colors"
+            className="w-full bg-black border border-zinc-800 rounded-2xl py-4 px-5 text-white focus:outline-none focus:border-yellow-400/50 transition-colors text-sm overflow-hidden resize-none"
           />
         </div>
 <div className="relative">
@@ -277,11 +290,11 @@ return matchSearch && matchType && matchFavorite;
                 }`}
               >
                 {/* Accordion Header */}
-                <div 
-                  onClick={() => toggleInquiry(inq.id)}
-                  className="p-6 cursor-pointer flex items-center justify-between group"
-                >
-                  <div className="flex items-center gap-6 flex-1">
+<div 
+  onClick={() => toggleInquiry(inq.id)}
+  className="p-4 md:p-6 cursor-pointer flex flex-col md:flex-row md:items-center md:justify-between gap-3 group"
+>
+<div className="flex items-start md:items-center gap-3 md:gap-6 flex-1">
 <span className={`text-xs font-black px-3 py-1.5 rounded-full border shrink-0 ${
   inq.status === 'done'
     ? 'text-green-400 border-green-400/30 bg-green-400/10'
@@ -291,7 +304,7 @@ return matchSearch && matchType && matchFavorite;
 }`}>
   {inq.status === 'done' ? '답변완료' : inq.status === 'in_progress' ? '답변중' : '답변대기'}
 </span>
-<div className="flex flex-col min-w-[160px] shrink-0 gap-1">
+<div className="flex flex-col gap-1">
   <span className="text-sm font-black text-white">
     {inq.userEmail}
   </span>
@@ -379,12 +392,16 @@ return matchSearch && matchType && matchFavorite;
   </div>
 ) : (
   <div className="space-y-3">
-    <textarea
-      rows={4}
-      value={replyText}
-      onChange={(e) => setReplyText(e.target.value)}
-      className="w-full bg-black border border-zinc-800 rounded-2xl py-4 px-5 text-white focus:outline-none focus:border-yellow-400/50 transition-colors text-sm resize-none"
-    />
+<textarea
+  ref={textareaRef}
+  rows={4}
+  value={replyText}
+  onChange={(e) => {
+    setReplyText(e.target.value);
+    autoResize();
+  }}
+  className="w-full bg-black border border-zinc-800 rounded-2xl py-4 px-5 text-white focus:outline-none focus:border-yellow-400/50 transition-colors text-sm overflow-hidden resize-none"
+/>
 
     <button
       onClick={() => handleRegisterReply(inq.id)}
