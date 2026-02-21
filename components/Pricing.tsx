@@ -100,9 +100,11 @@ const Pricing: React.FC = () => {
         <div className="inline-block px-4 py-1.5 mb-6 rounded-full bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 text-xs font-bold tracking-widest uppercase">
           Pricing Plans
         </div>
-        <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
-          선택의 폭을 넓힌 <span className="text-yellow-400">맞춤형 플랜</span>
-        </h2>
+<h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tight">
+  선택의 폭을 넓힌
+  <br className="md:hidden" />
+  <span className="text-yellow-400">맞춤형 플랜</span>
+</h2>
         <p className="text-zinc-500 text-lg mb-12 max-w-2xl mx-auto font-medium">
           당신의 크리에이티브 가치를 한 단계 더 높여보세요. <br className="hidden md:block"/>
           프로젝트의 규모에 최적화된 최신 AI 도구들을 제공합니다.
