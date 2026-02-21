@@ -66,17 +66,17 @@ arr.push({
 });
 
     });
-   const sorted = arr.sort((a, b) => {
-  // 둘 다 답변 완료면 오래된 것 위로
+const sorted = arr.sort((a, b) => {
+  // 둘 다 답변 완료 → 최신순
   if (a.status === "done" && b.status === "done") {
-    return a.createdAt > b.createdAt ? 1 : -1;
+    return a.createdAt < b.createdAt ? 1 : -1;
   }
 
   // 답변 안된 게 위로
   if (a.status !== "done" && b.status === "done") return -1;
   if (a.status === "done" && b.status !== "done") return 1;
 
-  // 나머지는 최신순
+  // 나머지 (open, in_progress) → 최신순
   return a.createdAt < b.createdAt ? 1 : -1;
 });
 
