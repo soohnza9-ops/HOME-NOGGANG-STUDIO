@@ -2,6 +2,7 @@ import { getAuth } from "firebase/auth";
 import { setUserPlan } from "../src/planService";
 import React, { useState } from 'react';
 import { Check, Shield, CreditCard, X, Zap } from 'lucide-react';
+import * as PortOne from "@portone/browser-sdk/v2";
 
 const Pricing: React.FC = () => {
 
@@ -194,26 +195,43 @@ const Pricing: React.FC = () => {
                 ))}
               </div>
 <button
-  onClick={async (e) => {
-    e.stopPropagation();
+onClick={async (e) => {
+  e.stopPropagation();
 
-    const auth = getAuth();
-    const user = auth.currentUser;
+  const auth = getAuth();
+  const user = auth.currentUser;
 
-    if (!user) {
-      // 로그인 안 돼 있으면 로그인 화면으로
-      window.location.href = "/login";
-      return;
-    }
+  if (!user) {
+    window.location.href = "/login";
+    return;
+  }
 
-    if (plan.id === "free") {
-      await setUserPlan(user.uid, "free");
-      alert("Free 플랜이 적용되었습니다.");
-    } else {
-      localStorage.setItem("selectedPlan", plan.id);
-      alert(`${plan.name} 플랜이 선택되었습니다. (결제는 곧 연결됩니다)`);
-    }
-  }}
+  if (plan.id === "free") {
+    await setUserPlan(user.uid, "free");
+    alert("Free 플랜이 적용되었습니다.");
+    return;
+  }
+
+  // 🔥 유료 플랜 결제
+  try {
+await PortOne.requestIssueBillingKey({
+  storeId: "store-a8485a47-94f4-4c4d-8dc6-8de8e833f2dc",
+  channelKey: "channel-key-45e4f3bf-e527-4c66-94a2-f70d19d7885c",
+  billingKeyMethod: "CARD",
+  issueId: `issue-${crypto.randomUUID()}`,
+  issueName: `${plan.name} 정기결제 카드 등록`,
+  customer: {
+    fullName: user.displayName || "사용자",
+    phoneNumber: "010-0000-0000",
+    email: user.email || "test@test.com",
+  },
+});
+  } catch (err) {
+    console.error(err);
+    alert("결제창 호출 중 오류 발생");
+  }
+}}
+
   className={`w-full py-4 text-base rounded-[1.25rem] font-black transition-all duration-300 transform active:scale-95 ${
     isSelected 
       ? 'bg-yellow-400 text-black shadow-[0_10px_20px_rgba(250,204,21,0.2)]' 

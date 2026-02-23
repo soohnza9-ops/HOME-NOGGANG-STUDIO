@@ -145,7 +145,7 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-400"></span>
             </span>
-            NEW: 노깡 STUDIO v0.0.90 업데이트 완료
+            NEW: 노깡 STUDIO v0.0.94 업데이트 완료
           </div>
           <h1 className="text-2xl md:text-5xl font-black mb-5 leading-snug">
             창작의 한계를 뛰어넘는 <br />

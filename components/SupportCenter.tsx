@@ -45,6 +45,7 @@ function getStatusUI(status: "open" | "done") {
   return { text: status, class: "bg-zinc-800 text-zinc-400 border-zinc-700/50" };
 }
 
+
 const SupportCenter: React.FC = () => {
   const navigate = useNavigate();
   const [view, setView] = useState<ViewState>('list');
@@ -52,6 +53,7 @@ const SupportCenter: React.FC = () => {
 const [title, setTitle] = useState("");
 const [message, setMessage] = useState("");
   const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 const [inquiries, setInquiries] = useState<Ticket[]>([]);
   const [activeTab, setActiveTab] = useState<TabState>('inquiry');
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
@@ -76,9 +78,11 @@ const handleBackToList = () => {
     setView('detail');
   };
 
-  useEffect(() => {
+useEffect(() => {
   const unsubAuth = onAuthStateChanged(auth, (u) => {
     setUser(u);
+    setLoading(false);   // 🔥 추가
+
     if (!u) {
       setInquiries([]);
     }
@@ -107,6 +111,18 @@ useEffect(() => {
   return () => unsubTickets();
 }, [user]);
 
+if (!loading && !user) {
+  return (
+    <div className="max-w-5xl mx-auto px-4 py-16">
+      <section className="bg-gradient-to-r from-zinc-900 to-zinc-800/50 border border-yellow-400/20 rounded-[2.5rem] p-8 md:p-10 shadow-2xl">
+        <h3 className="text-xl font-black text-white mb-2">로그인이 필요합니다</h3>
+        <p className="text-zinc-400 font-medium">
+          로그인 후 문의 내역 확인 및 환불 요청이 가능합니다.
+        </p>
+      </section>
+    </div>
+  );
+}
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-5xl mx-auto space-y-8 pb-24 px-4">
