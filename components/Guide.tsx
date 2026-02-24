@@ -54,7 +54,7 @@ const Guide: React.FC = () => {
             return (
               <div
                 key={idx}
-                className="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 hover:border-yellow-400/30 transition-colors"
+                className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 hover:border-yellow-400/30 transition-colors"
               >
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-12 h-12 bg-yellow-400/10 rounded-2xl flex items-center justify-center text-yellow-400">

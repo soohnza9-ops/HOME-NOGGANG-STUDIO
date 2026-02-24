@@ -206,32 +206,63 @@ onClick={async (e) => {
     return;
   }
 
+  // ✅ FREE 플랜
   if (plan.id === "free") {
     await setUserPlan(user.uid, "free");
     alert("Free 플랜이 적용되었습니다.");
     return;
   }
 
-  // 🔥 유료 플랜 결제
+  // ✅ 유료 플랜
   try {
-await PortOne.requestIssueBillingKey({
-  storeId: "store-a8485a47-94f4-4c4d-8dc6-8de8e833f2dc",
-  channelKey: "channel-key-45e4f3bf-e527-4c66-94a2-f70d19d7885c",
-  billingKeyMethod: "CARD",
-  issueId: `issue-${crypto.randomUUID()}`,
-  issueName: `${plan.name} 정기결제 카드 등록`,
-  customer: {
-    fullName: user.displayName || "사용자",
-    phoneNumber: "010-0000-0000",
-    email: user.email || "test@test.com",
-  },
-});
+    const result = await PortOne.requestIssueBillingKey({
+      storeId: "store-a8485a47-94f4-4c4d-8dc6-8de8e833f2dc",
+      channelKey: "channel-key-4758c29c-fdbe-498a-b44c-752bfaf7c805",
+      billingKeyMethod: "CARD",
+      issueId: `issue-${crypto.randomUUID()}`,
+      issueName: `${plan.name} 정기결제 카드 등록`,
+      customer: {
+        fullName: user.displayName || "사용자",
+        phoneNumber: "010-0000-0000",
+        email: user.email || "test@test.com",
+      },
+    });
+
+    if (!result?.billingKey) {
+      alert("카드 등록 실패");
+      return;
+    }
+
+    const token = await user.getIdToken();
+
+    const res = await fetch(
+      "https://use-ewhxeg3kta-uc.a.run.app/subscribe",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          billingKey: result.billingKey,
+          planId: plan.id,
+        }),
+      }
+    );
+
+    const data = await res.json();
+
+    if (!data.ok) {
+      alert("결제 실패");
+      return;
+    }
+
+    alert("구독이 시작되었습니다.");
   } catch (err) {
     console.error(err);
-    alert("결제창 호출 중 오류 발생");
+    alert("결제 처리 중 오류 발생");
   }
 }}
-
   className={`w-full py-4 text-base rounded-[1.25rem] font-black transition-all duration-300 transform active:scale-95 ${
     isSelected 
       ? 'bg-yellow-400 text-black shadow-[0_10px_20px_rgba(250,204,21,0.2)]' 
