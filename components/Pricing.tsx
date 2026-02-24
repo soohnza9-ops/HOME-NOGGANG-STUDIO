@@ -198,6 +198,8 @@ const Pricing: React.FC = () => {
 onClick={async (e) => {
   e.stopPropagation();
 
+  setSelectedPlan(plan.id);
+
   const auth = getAuth();
   const user = auth.currentUser;
 
