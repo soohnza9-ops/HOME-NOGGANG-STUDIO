@@ -229,7 +229,7 @@ onClick={async (e) => {
         email: user.email || "test@test.com",
       },
     });
-
+console.log("ISSUE RESULT:", result);
     if (!result?.billingKey) {
       alert("카드 등록 실패");
       return;
