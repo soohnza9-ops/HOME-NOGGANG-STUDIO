@@ -32,6 +32,21 @@ const App: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [supportResetKey, setSupportResetKey] = useState(0);
 
+  const [showTopButton, setShowTopButton] = useState(false);
+
+useEffect(() => {
+  const handleScroll = () => {
+    if (window.scrollY > 300) {
+      setShowTopButton(true);
+    } else {
+      setShowTopButton(false);
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
@@ -195,6 +210,17 @@ const App: React.FC = () => {
   </div>
 </footer>
 
+{showTopButton && (
+  <button
+    onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+    className="fixed bottom-8 right-8 z-50
+               bg-yellow-400 text-black font-bold
+               px-5 py-3 rounded-full
+               shadow-lg hover:scale-105 transition-all"
+  >
+    ↑ 위로 가기
+  </button>
+)}
       {/* 웹 로그인 모달 */}
       {showLoginModal && (
         <LoginModal

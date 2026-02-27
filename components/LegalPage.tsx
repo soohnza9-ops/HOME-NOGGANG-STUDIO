@@ -60,8 +60,8 @@ const LegalPage: React.FC = () => {
                 <p>대표자: 김정탁</p>
                 <p>사업자등록번호: 460-03-03869</p>
                 <p>통신판매업 신고번호: </p>
-                <p>사업장 주소: </p>
-                <p>이메일: </p>
+                <p>사업장 주소: 인천광역시 미추홀구 용현동 627-85</p>
+                <p>이메일: noggang.studio@gmail.com</p>
               </section>
 
               <section className="pb-8 border-b border-zinc-800">
@@ -70,6 +70,8 @@ const LegalPage: React.FC = () => {
                 <p>서비스는 웹사이트 및 다운로드형 프로그램을 포함합니다.</p>
                 <p>서비스의 기능, 요금제 및 정책은 운영상 필요에 따라 변경될 수 있습니다.</p>
                 <p>무료 플랜은 유료 계약이 아니며, 정책에 따라 변경 또는 종료될 수 있습니다.</p>
+                <p> 회사는 시스템 점검, 서버 장애, 외부 API 정책 변경 등 운영상 필요한 경우 서비스의 전부 또는 일부를 일시적으로 중단할 수 있습니다. </p>
+                <p>이 경우 사전에 공지하며, 긴급한 경우 사후 공지할 수 있습니다.</p>
               </section>
 
               <section className="pb-8 border-b border-zinc-800">
@@ -77,6 +79,7 @@ const LegalPage: React.FC = () => {
                 <p>회원은 Google 로그인을 통해 가입할 수 있습니다.</p>
                 <p>회원은 본인의 이메일 정보를 기반으로 계정을 생성합니다.</p>
                 <p>계정 정보 관리 및 보안 유지에 대한 책임은 회원 본인에게 있습니다.</p>
+                <p>회원은 계정을 제3자에게 양도, 대여 또는 공유할 수 없습니다. 계정 관리 소홀 및 공유로 인해 발생한 손해에 대한 책임은 회원에게 있습니다.</p>
               </section>
 
               <section className="pb-8 border-b border-zinc-800">
@@ -85,7 +88,8 @@ const LegalPage: React.FC = () => {
                 <p>유료 플랜은 월 단위 자동결제 방식으로 운영됩니다.</p>
                 <p>구독은 매월 동일한 날짜에 자동 갱신됩니다.</p>
                 <p>회원은 다음 결제일 이전까지 언제든지 구독을 해지할 수 있으며, 해지 시 다음 결제일부터 자동결제가 이루어지지 않습니다.</p>
-                <p>결제는 회사가 지정한 결제대행사를 통해 이루어집니다. (PG사: )</p>
+                <p>결제는 회사가 지정한 결제대행사를 통해 이루어집니다. (PG사: NHN KCP)</p>
+                <p>크레딧은 가입일 기준으로 매월 자동 갱신되며, 미사용 크레딧은 다음 달로 이월되지 않습니다.</p>
               </section>
 
               <section className="pb-8 border-b border-zinc-800">
@@ -109,6 +113,7 @@ const LegalPage: React.FC = () => {
                     <li>유료 기능을 1회 이상 사용한 경우</li>
                     <li>결제일로부터 7일이 경과한 경우</li>
                     <li>이용자의 귀책사유로 계정이 제한된 경우</li>
+                    <li>AI 생성 결과의 품질, 표현 방식, 주관적 만족도는 환불 사유에 해당하지 않습니다.</li>
                   </ul>
                 </div>
               </section>
@@ -116,9 +121,11 @@ const LegalPage: React.FC = () => {
               <section className="pb-8 border-b border-zinc-800">
                 <h2 className="text-xl font-bold tracking-tight text-white mb-4">제7조 (개인 API 키 사용)</h2>
                 <p>본 서비스는 회원이 직접 입력한 외부 API 키를 통해 콘텐츠를 생성하는 구조입니다.</p>
-                <p>API 사용에 따른 요금, 크레딧 소진, 한도 초과 등은 전적으로 회원의 책임입니다.</p>
-                <p>회원의 API 설정 오류, 키 관리 부주의, 사용량 관리 미숙 등으로 발생한 손해에 대해 회사는 책임을 지지 않습니다.</p>
-                <p>외부 API 제공자의 정책 변경, 요금 조정, 서비스 중단 등에 대해서도 회사는 책임을 부담하지 않습니다.</p>
+                <p>외부 API 사용에 따른 요금 발생, 크레딧 소진, 한도 초과, 자동 과금 등은 회원의 Google 계정 기준으로 처리되며, 이에 대한 관리 및 책임은 전적으로 회원에게 있습니다.</p>
+                <p>회원의 API 설정 오류, 키 관리 부주의, 사용량 관리 미숙, 보안 관리 소홀 등으로 발생한 손해에 대하여 회사는 책임을 부담하지 않습니다.
+                   단, 회사의 고의 또는 중대한 과실이 있는 경우에는 예외로 합니다.</p>
+                <p>외부 API 제공자의 정책 변경, 요금 조정, 기능 변경, 서비스 중단, 장애 등 외부 요인으로 인하여 발생한 손해에 대하여 회사는 책임을 부담하지 않습니다.</p>
+                <p>외부 API의 과금 구조 및 정책은 회사의 통제 범위를 벗어나며, 이에 대한 환불 또는 조정 권한은 회사에 없습니다.</p>
               </section>
 
               <section className="pb-8 border-b border-zinc-800">
@@ -126,12 +133,38 @@ const LegalPage: React.FC = () => {
                 <p>회원이 본인의 API 키를 이용하여 생성한 콘텐츠의 저작권은 원칙적으로 해당 회원에게 귀속됩니다.</p>
                 <p>회사는 생성 콘텐츠에 대한 저작권을 주장하지 않습니다.</p>
                 <p>생성 콘텐츠가 제3자의 권리를 침해하는 경우 그 책임은 회원에게 있습니다.</p>
+                <p>AI 특성상 생성 결과의 정확성, 완전성, 특정 목적에의 적합성은 보장되지 않습니다.</p>
+                <p>
+회사는 회원이 생성한 콘텐츠를 별도로 저장하거나 보관하지 않으며, 콘텐츠의 관리 및 백업 책임은 회원에게 있습니다.
+</p>
               </section>
 
-              <section className="pb-8 border-b border-zinc-800">
-                <h2 className="text-xl font-bold tracking-tight text-white mb-4">제9조 (서비스 이용 제한)</h2>
-                <p>회사는 부정 사용 또는 약관 위반이 확인된 경우 서비스 이용을 제한할 수 있습니다.</p>
-              </section>
+<section className="pb-8 border-b border-zinc-800">
+  <h2 className="text-xl font-bold tracking-tight text-white mb-4">
+    제9조 (서비스 이용 제한)
+  </h2>
+
+  <p>
+    회사는 다음 각 호에 해당하는 경우 서비스 이용을 제한하거나 계정을 정지할 수 있습니다.
+  </p>
+
+  <div className="pl-4 space-y-2 mt-4">
+    <p className="font-medium text-white">이용 제한 사유</p>
+    <ul className="list-disc pl-6 space-y-1">
+      <li>타인의 API 키를 도용하거나 무단 사용하는 행위</li>
+      <li>Google 정책에 위배되는 콘텐츠를 반복적으로 생성 시도하는 행위</li>
+      <li>성적이거나 과도하게 폭력적인 콘텐츠 등 Google 정책에 위배되는 내용을 생성하려는 행위</li>
+      <li>자동화 프로그램 또는 비정상적인 방식으로 과도한 요청을 보내는 행위</li>
+      <li>결제 취소를 반복하여 서비스를 악용하는 행위</li>
+      <li>기타 본 약관을 중대하게 위반한 경우</li>
+    </ul>
+  </div>
+
+  <p className="mt-4">
+    이용 제한 또는 계정 정지 조치가 이루어진 경우, 회사는 환불 의무를 부담하지 않습니다.
+    단, 회사의 고의 또는 중대한 과실이 있는 경우에는 예외로 합니다.
+  </p>
+</section>
 
               <section className="pb-8 border-b border-zinc-800">
                 <h2 className="text-xl font-bold tracking-tight text-white mb-4">제10조 (약관의 변경)</h2>
@@ -143,6 +176,16 @@ const LegalPage: React.FC = () => {
                 <h2 className="text-xl font-bold tracking-tight text-white mb-4">제11조 (책임의 제한)</h2>
                 <p>회사는 천재지변, 서버 장애 등 불가항력적 사유로 인한 손해에 대해 책임을 지지 않습니다.</p>
                 <p>고의 또는 중대한 과실이 없는 한 간접적 손해에 대해 책임을 부담하지 않습니다.</p>
+                <p>회원의 사용 방법 미숙지, 기능 이해 부족, 매뉴얼 미확인, 설정 오류 등 회원의 귀책사유로 발생한 손해에 대하여 회사는 책임을 부담하지 않습니다.</p>
+                <p>단, 회사의 고의 또는 중대한 과실이 있는 경우에는 예외로 합니다.</p>
+<p>
+미리보기 화면은 사용자 편의를 위한 참고용으로 제공되며,
+실시간 렌더링 환경과 최종 저장 영상의 인코딩 환경 차이로 인해
+자막의 폰트 크기, 굵기, 줄간격, 위치, 자막 박스 여백, 애니메이션 효과,
+줌 비율 등 세부 표현에서 일부 차이가 발생할 수 있습니다.
+회사는 이러한 기술적 특성으로 인한 결과 차이에 대해 책임을 부담하지 않습니다.
+단, 회사의 고의 또는 중대한 과실이 있는 경우에는 예외로 합니다.
+</p>
                 <p className="mt-4">본 약관은 대한민국 법률을 따르며, 분쟁 발생 시 회사 소재지 관할 법원을 전속 관할로 합니다.</p>
               </section>
 
@@ -203,7 +246,7 @@ const LegalPage: React.FC = () => {
                 <ul className="list-disc pl-6 space-y-1">
                   <li>Google Firebase (Google LLC)</li>
                   <li>Vercel</li>
-                  <li>결제대행사(PG사: )</li>
+                  <li>결제대행사 (NHN KCP)</li>
                 </ul>
               </section>
 
@@ -220,8 +263,8 @@ const LegalPage: React.FC = () => {
               <section className="pb-8">
                 <h2 className="text-xl font-bold tracking-tight text-white mb-4">7. 개인정보 보호책임자</h2>
                 <p>성명: 김정탁</p>
-                <p>이메일: </p>
-                <p>연락처: </p>
+                <p>이메일: noggang.studio@gmail.com</p>
+                <p>연락처: 070-8098-1565</p>
               </section>
 
             </div>
