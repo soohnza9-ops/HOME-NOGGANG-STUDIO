@@ -45,7 +45,7 @@ if (!user) {
   return;
 }
 window.location.href =
-  "https://github.com/soohnza9-ops/NOGGANG-STUDIO/releases/latest/download/NOGGANG-STUDIO-Setup-0.1.94.exe";
+  "https://github.com/soohnza9-ops/NOGGANG-STUDIO/releases/latest/download/NOGGANG-STUDIO-Setup-0.1.101.exe";
   }}
 
   className={`w-full sm:w-auto px-10 py-5 font-black rounded-[2rem] transition-all flex items-center justify-center gap-3 ${

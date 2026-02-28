@@ -384,7 +384,7 @@ const emailLocked = userDoc?.emailLocked === true;
                       </span>
                     </div>
 <p className="text-zinc-400 font-medium text-lg">
-  {userDoc?.trialActive
+  {isTrialActive
     ? "쿠폰 사용중 (체험 기간)"
     : planDesc(effectivePlan)}
 </p>
