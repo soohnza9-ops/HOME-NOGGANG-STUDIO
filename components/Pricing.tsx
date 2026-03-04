@@ -7,6 +7,7 @@ import * as PortOne from "@portone/browser-sdk/v2";
 const Pricing: React.FC = () => {
 const [isPaying, setIsPaying] = useState(false);
 const [paymentDone, setPaymentDone] = useState(false);
+const [paymentFailed, setPaymentFailed] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string>('pro');
 
   const plans = [
@@ -241,10 +242,10 @@ onClick={async (e) => {
       },
     });
 
-    if (!result?.billingKey) {
-      setIsPaying(false);
-      return;
-    }
+if (!result?.billingKey) {
+  setPaymentFailed(true);
+  return;
+}
 
     const token = await user.getIdToken();
 
@@ -265,10 +266,10 @@ onClick={async (e) => {
 
     const data = await res.json();
 
-    if (!data.ok) {
-      setIsPaying(false);
-      return;
-    }
+if (!data.ok) {
+  setPaymentFailed(true);
+  return;
+}
 
     // ✅ 결제 성공
     setPaymentDone(true);
@@ -278,9 +279,9 @@ onClick={async (e) => {
     }, 1800);
 
   } catch (err) {
-    console.error(err);
-    setIsPaying(false);
-  }
+  console.error(err);
+  setPaymentFailed(true);
+}
 }}
   className={`w-full py-4 text-base rounded-[1.25rem] font-black transition-all duration-300 transform active:scale-95 ${
     isSelected 
@@ -343,7 +344,8 @@ onClick={async (e) => {
         </div>
       </div>
       {/* 결제 로딩 모달 */}
-{isPaying && !paymentDone && (
+{/* 결제 로딩 모달 */}
+{isPaying && !paymentDone && !paymentFailed && (
   <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
     <div className="bg-zinc-900 border border-yellow-400/30 rounded-3xl p-10 text-center shadow-2xl">
 
@@ -381,8 +383,41 @@ onClick={async (e) => {
     </div>
   </div>
 )}
+
+
+{paymentFailed && (
+  <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+    <div className="bg-zinc-900 border border-red-400/30 rounded-3xl p-10 text-center shadow-2xl">
+
+      <div className="w-14 h-14 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+        <X className="w-8 h-8 text-white" />
+      </div>
+
+      <h3 className="text-xl font-black text-white mb-2">
+        결제가 실패했습니다
+      </h3>
+
+      <p className="text-zinc-400 text-sm">
+        다시 시도해주세요
+      </p>
+
+      <button
+        onClick={() => {
+          setPaymentFailed(false);
+          setIsPaying(false);
+        }}
+        className="mt-6 px-6 py-2 bg-yellow-400 text-black font-bold rounded-xl"
+      >
+        다시 시도
+      </button>
+
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
+
 
 export default Pricing;
