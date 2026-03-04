@@ -102,15 +102,6 @@ function providerLabel(providerId?: string) {
   }
 }
 
-// WEB 전용 deviceId 고정
-if (!(window as any).NOGGANG_DEVICE) {
-  const deviceId = "0b70a754-936b-4c80-a907-fc8f6b3d5709";
-
-  (window as any).NOGGANG_DEVICE = {
-    get: async () => deviceId,
-  };
-}
-
 const MyPage: React.FC<MyPageProps> = ({ onLogout }) => {
   const [showCancelModal, setShowCancelModal] = useState(false);
 const [canceling, setCanceling] = useState(false);
@@ -433,13 +424,36 @@ const emailLocked = userDoc?.emailLocked === true;
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 min-w-[200px]">
-                  <button
-                    onClick={() => navigate("/pricing")}
-                    className="w-full py-4 bg-yellow-400 text-black font-black rounded-2xl text-sm hover:bg-yellow-300 transition-all flex items-center justify-center gap-2 shadow-lg shadow-yellow-400/10"
-                  >
-                    요금제 변경 <ArrowRight className="w-4 h-4" />
-                  </button>
+<div className="flex flex-col gap-3 min-w-[200px]">
+
+{effectivePlan === "free" || statusText !== "active" ? (
+
+  <>
+    <button
+      onClick={() => navigate("/pricing")}
+      className="w-full py-4 bg-yellow-400 text-black font-black rounded-2xl text-sm hover:bg-yellow-300 transition-all flex items-center justify-center gap-2 shadow-lg shadow-yellow-400/10"
+    >
+      요금제 선택 <ArrowRight className="w-4 h-4" />
+    </button>
+  </>
+
+) : (
+
+  <>
+    <button
+      onClick={() => navigate("/pricing")}
+      className="w-full py-4 bg-yellow-400 text-black font-black rounded-2xl text-sm hover:bg-yellow-300 transition-all flex items-center justify-center gap-2 shadow-lg shadow-yellow-400/10"
+    >
+      플랜 변경 예약 <ArrowRight className="w-4 h-4" />
+    </button>
+
+    <p className="text-[11px] text-zinc-500 text-center font-medium">
+      변경된 요금제는 다음 결제 주기부터 적용됩니다.
+    </p>
+  </>
+
+)}
+
 {statusText === "active" && effectivePlan !== "free" && (
   <button
     onClick={() => setShowCancelModal(true)}
@@ -449,8 +463,7 @@ const emailLocked = userDoc?.emailLocked === true;
   </button>
 )}
 
-
-                </div>
+</div>
               </div>
             </div>
             {/* Decorative Background Icon */}
