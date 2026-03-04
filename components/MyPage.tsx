@@ -112,6 +112,15 @@ if (!(window as any).NOGGANG_DEVICE) {
 }
 
 const MyPage: React.FC<MyPageProps> = ({ onLogout }) => {
+  const [showCancelModal, setShowCancelModal] = useState(false);
+const [canceling, setCanceling] = useState(false);
+
+const [showRefundModal, setShowRefundModal] = useState(false);
+const [refunding, setRefunding] = useState(false);
+
+const [refundResult, setRefundResult] = useState<
+  "success" | "expired" | "used" | "error" | null
+>(null);
   const navigate = useNavigate();
 const [couponCode, setCouponCode] = useState("");
 const [applyingCoupon, setApplyingCoupon] = useState(false);
@@ -431,78 +440,28 @@ const emailLocked = userDoc?.emailLocked === true;
                   >
                     요금제 변경 <ArrowRight className="w-4 h-4" />
                   </button>
-<button
-  onClick={async () => {
+{statusText === "active" && effectivePlan !== "free" && (
+  <button
+    onClick={() => setShowCancelModal(true)}
+    className="w-full py-4 bg-zinc-800/50 text-zinc-400 font-black rounded-2xl text-sm hover:bg-zinc-800 hover:text-white transition-all border border-zinc-700/30"
+  >
+    구독 해지
+  </button>
+)}
 
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const token = await user.getIdToken();
-
-    const res = await fetch(
-      "https://us-central1-noggang-studio.cloudfunctions.net/use/cancel-subscription",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    const json = await res.json();
-
-    if (!res.ok || !json.ok) {
-      alert("구독 해지에 실패했습니다.");
-      return;
-    }
-
-    alert("구독이 해지되었습니다.\n현재 결제 기간까지는 계속 이용할 수 있습니다.");
-
-  }}
-  className="w-full py-4 bg-zinc-800/50 text-zinc-400 font-black rounded-2xl text-sm hover:bg-zinc-800 hover:text-white transition-all border border-zinc-700/30"
->
-  구독 해지
-</button>
-                  <button
-  onClick={async () => {
-
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const token = await user.getIdToken();
-
-    const res = await fetch(
-      "https://us-central1-noggang-studio.cloudfunctions.net/use/refund",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    const json = await res.json();
-
-    if (!res.ok || !json.ok) {
-
-      if (json.reason === "REFUND_PERIOD_EXPIRED") {
-        alert("결제 후 7일이 지나 환불이 불가능합니다.");
-      }
-
-      if (json.reason === "CREDITS_ALREADY_USED") {
-        alert("이미 크레딧을 사용하여 환불이 불가능합니다.");
-      }
-
-      return;
-    }
-
-    alert("환불이 완료되었습니다.");
-
-  }}
-  className="w-full py-4 bg-zinc-800/50 text-zinc-400 font-black rounded-2xl text-sm hover:bg-zinc-800 hover:text-white transition-all border border-zinc-700/30"
->
-  결제 환불
-</button>
+{effectivePlan !== "free" &&
+ (credits.script ?? 0) === 0 &&
+ (credits.video ?? 0) === 0 && (
+  <button
+    onClick={() => {
+      setRefundResult(null);
+      setShowRefundModal(true);
+    }}
+    className="w-full py-4 bg-zinc-800/50 text-zinc-400 font-black rounded-2xl text-sm hover:bg-zinc-800 hover:text-white transition-all border border-zinc-700/30"
+  >
+    결제 환불
+  </button>
+)}
                 </div>
               </div>
             </div>
@@ -665,7 +624,10 @@ const res = await fetch(
 );
 
 
-          const json = await res.json();
+let json: any = {};
+try {
+  json = await res.json();
+} catch {}
 
           if (!res.ok || json.ok !== true) {
             setCouponResult("error");
@@ -951,6 +913,181 @@ try {
     document.body
   )}
 
+{showCancelModal &&
+  createPortal(
+    <div className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex items-center justify-center">
+      <div className="bg-zinc-900 border border-yellow-400/30 rounded-[2rem] px-8 py-7 w-full max-w-md shadow-2xl">
+        <h3 className="text-xl font-black text-white mb-3">
+          구독을 해지하시겠습니까?
+        </h3>
+
+        <p className="text-zinc-400 text-sm">
+          해지해도 현재 결제 기간까지는 계속 이용할 수 있습니다.
+        </p>
+
+        <div className="mt-6 flex gap-3">
+          <button
+            disabled={canceling}
+            onClick={() => setShowCancelModal(false)}
+            className="flex-1 py-3 bg-zinc-800 text-zinc-300 rounded-xl font-bold disabled:opacity-50"
+          >
+            취소
+          </button>
+
+          <button
+            disabled={canceling}
+            onClick={async () => {
+              try {
+                setCanceling(true);
+
+                const u = auth.currentUser;
+                if (!u) return;
+
+                const token = await u.getIdToken();
+                const res = await fetch(
+                  "https://us-central1-noggang-studio.cloudfunctions.net/use/cancel-subscription",
+                  {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${token}` },
+                  }
+                );
+
+                const json = await res.json();
+
+                if (!res.ok || !json.ok) {
+                  alert("구독 해지에 실패했습니다.");
+                  return;
+                }
+setUserDoc((prev:any) =>
+  prev
+    ? { ...prev, status: "canceled" }
+    : prev
+);
+                alert("구독이 해지되었습니다.\n현재 결제 기간까지는 계속 이용할 수 있습니다.");
+                setShowCancelModal(false);
+              } finally {
+                setCanceling(false);
+              }
+            }}
+            className="flex-1 py-3 bg-yellow-400 text-black rounded-xl font-black hover:bg-yellow-300 transition disabled:opacity-50"
+          >
+            {canceling ? "처리 중..." : "확인"}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  )}
+
+  {showRefundModal &&
+  createPortal(
+    <div className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex items-center justify-center">
+      <div className="bg-zinc-900 border border-yellow-400/30 rounded-[2rem] px-8 py-7 w-full max-w-md shadow-2xl">
+        <h3 className="text-xl font-black text-white mb-3">
+          환불하시겠습니까?
+        </h3>
+
+        <p className="text-zinc-400 text-sm leading-relaxed">
+          결제 후 <span className="text-yellow-400 font-bold">7일 이내</span>이며<br />
+          <span className="text-yellow-400 font-bold">사용량이 0</span>인 경우에만 환불이 가능합니다.
+        </p>
+
+        <div className="mt-6 flex gap-3">
+          <button
+            disabled={refunding}
+            onClick={() => setShowRefundModal(false)}
+            className="flex-1 py-3 bg-zinc-800 text-zinc-300 rounded-xl font-bold disabled:opacity-50"
+          >
+            취소
+          </button>
+
+          <button
+            disabled={refunding}
+            onClick={async () => {
+              try {
+                setRefunding(true);
+                setRefundResult(null);
+
+                const u = auth.currentUser;
+                if (!u) return;
+
+                const token = await u.getIdToken();
+
+                const res = await fetch(
+                  "https://us-central1-noggang-studio.cloudfunctions.net/use/refund",
+                  {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${token}` },
+                  }
+                );
+
+let json: any = {};
+try {
+  json = await res.json();
+} catch {}
+
+                if (!res.ok || !json.ok) {
+                  if (json.reason === "REFUND_PERIOD_EXPIRED") {
+                    setRefundResult("expired");
+                    return;
+                  }
+                  if (json.reason === "CREDITS_ALREADY_USED") {
+                    setRefundResult("used");
+                    return;
+                  }
+                  setRefundResult("error");
+                  return;
+                }
+
+setRefundResult("success");
+
+setUserDoc((prev:any) =>
+  prev
+    ? { ...prev, plan: "free", status: "active" }
+    : prev
+);
+
+setTimeout(() => {
+  setShowRefundModal(false);
+}, 1200);
+
+              } finally {
+                setRefunding(false);
+              }
+            }}
+            className="flex-1 py-3 bg-yellow-400 text-black rounded-xl font-black hover:bg-yellow-300 transition disabled:opacity-50"
+          >
+            {refunding ? "처리 중..." : "환불 진행"}
+          </button>
+        </div>
+
+        {refundResult === "success" && (
+          <p className="text-green-400 text-sm mt-4 font-bold">
+            환불이 완료되었습니다.
+          </p>
+        )}
+
+        {refundResult === "expired" && (
+          <p className="text-red-400 text-sm mt-4 font-bold">
+            결제 후 7일이 지나 환불이 불가능합니다.
+          </p>
+        )}
+
+        {refundResult === "used" && (
+          <p className="text-red-400 text-sm mt-4 font-bold">
+            사용량이 있어 환불이 불가능합니다.
+          </p>
+        )}
+
+        {refundResult === "error" && (
+          <p className="text-red-400 text-sm mt-4 font-bold">
+            환불 처리에 실패했습니다. 잠시 후 다시 시도해주세요.
+          </p>
+        )}
+      </div>
+    </div>,
+    document.body
+  )}
 
     </div>
   );
