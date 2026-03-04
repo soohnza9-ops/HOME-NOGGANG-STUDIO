@@ -96,9 +96,9 @@ const sections = [
   },
 
   // 🔥 새 메뉴
-  { title: 'AI 사진 생성기', icon: Play, content: '' },
-  { title: '음성 TTS 생성기', icon: Play, content: '' },
-  { title: '음악 가사 싱크', icon: Play, content: '' },
+  { title: 'AI 사진 생성기 (Beta)', icon: Play, content: '준비중입니다.' },
+  { title: '음성 TTS 생성기 (Beta)', icon: Play, content: '준비중입니다.' },
+  { title: '음악 가사 싱크 (Beta)', icon: Play, content: '준비중입니다.' },
         {
         title: '자주 묻는 질문',
         icon: Play,

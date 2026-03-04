@@ -302,21 +302,32 @@ if (!data.ok) {
         })}
       </div>
 
+{/* Beta Tools 안내 */}
+<div className="mt-8 flex justify-center">
+  <div className="max-w-2xl text-center text-[15px] text-zinc-200 bg-zinc-900/70 border border-zinc-800 rounded-2xl px-7 py-4 leading-relaxed">
+    <span className="text-yellow-400 font-semibold">Beta 기능</span> · AI 사진 생성기 · TTS 생성기 · 음악 가사 싱크
+    <br/>
+    <span className="text-zinc-400 text-[14px]">
+      무료 플랜은 일부 사용 제한이 있습니다 · 기능 및 정책은 변경될 수 있습니다
+    </span>
+  </div>
+</div>
+
       {/* PG Footer Section */}
-      <div className="mt-32 p-1 md:p-12 relative overflow-hidden">
+      <div className="mt-16 p-1 md:p-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-zinc-900/20 border border-zinc-800/50 rounded-[3rem] -z-10"></div>
         <div className="flex flex-col lg:flex-row gap-16 items-center">
           <div className="flex-1 space-y-8">
             <div>
               <h3 className="text-3xl font-black mb-4">신뢰할 수 있는 보안 결제</h3>
               <p className="text-zinc-500 text-lg leading-relaxed max-w-xl">
-                노깡 STUDIO는 사용자들의 개인정보와 결제 정보를 보호하기 위해 전 세계적으로 검증된 보안 결제 시스템을 사용합니다.
+                노깡 STUDIO는 사용자들의 개인정보와 결제 정보를 보호하기 위해 검증된 보안 결제 시스템을 사용합니다.
               </p>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-nowrap gap-4 pb-2">
               {[
-                { icon: Shield, color: 'text-blue-400', label: '256비트 암호화' },
+                { icon: Shield, color: 'text-blue-400', label: '안전한 보안 결제' },
                 { icon: CreditCard, color: 'text-yellow-400', label: '모든 국내 카드' },
                 { icon: Zap, color: 'text-purple-400', label: '간편 결제 지원' }
               ].map((item, i) => (
