@@ -5,7 +5,8 @@ import { Check, Shield, CreditCard, X, Zap } from 'lucide-react';
 import * as PortOne from "@portone/browser-sdk/v2";
 
 const Pricing: React.FC = () => {
-
+const [isPaying, setIsPaying] = useState(false);
+const [paymentDone, setPaymentDone] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string>('pro');
 
   const plans = [
@@ -195,9 +196,13 @@ const Pricing: React.FC = () => {
                 ))}
               </div>
 <button
+disabled={isPaying}
 onClick={async (e) => {
   e.stopPropagation();
 
+  if (isPaying) return; // 🔒 중복 결제 방지
+
+  setIsPaying(true);
   setSelectedPlan(plan.id);
 
   const auth = getAuth();
@@ -208,15 +213,21 @@ onClick={async (e) => {
     return;
   }
 
-  // ✅ FREE 플랜
-  if (plan.id === "free") {
-    await setUserPlan(user.uid, "free");
-    alert("Free 플랜이 적용되었습니다.");
-    return;
-  }
-
-  // ✅ 유료 플랜
   try {
+
+    // FREE 플랜
+    if (plan.id === "free") {
+      await setUserPlan(user.uid, "free");
+      setPaymentDone(true);
+
+      setTimeout(() => {
+        window.location.href = "/mypage";
+      }, 1500);
+
+      return;
+    }
+
+    // 카드 등록
     const result = await PortOne.requestIssueBillingKey({
       storeId: "store-a8485a47-94f4-4c4d-8dc6-8de8e833f2dc",
       channelKey: "channel-key-4758c29c-fdbe-498a-b44c-752bfaf7c805",
@@ -229,12 +240,9 @@ onClick={async (e) => {
         email: user.email || "test@test.com",
       },
     });
-console.log("ISSUE RESULT RAW:", JSON.stringify(result, null, 2));
-console.log("BILLING KEY:", result?.billingKey);
-console.log("ERROR CODE:", result?.code);
-console.log("ERROR MESSAGE:", result?.message);
+
     if (!result?.billingKey) {
-      alert("카드 등록 실패");
+      setIsPaying(false);
       return;
     }
 
@@ -258,24 +266,29 @@ console.log("ERROR MESSAGE:", result?.message);
     const data = await res.json();
 
     if (!data.ok) {
-      alert("결제 실패");
+      setIsPaying(false);
       return;
     }
 
-alert("구독이 시작되었습니다.");
-window.location.href = "/mypage";
+    // ✅ 결제 성공
+    setPaymentDone(true);
+
+    setTimeout(() => {
+      window.location.href = "/mypage";
+    }, 1800);
+
   } catch (err) {
     console.error(err);
-    alert("결제 처리 중 오류 발생");
+    setIsPaying(false);
   }
 }}
   className={`w-full py-4 text-base rounded-[1.25rem] font-black transition-all duration-300 transform active:scale-95 ${
     isSelected 
       ? 'bg-yellow-400 text-black shadow-[0_10px_20px_rgba(250,204,21,0.2)]' 
       : 'bg-zinc-800 text-white hover:bg-zinc-700'
-  }`}
+} ${isPaying ? "opacity-60 cursor-not-allowed" : ""}`}
 >
-  시작하기
+{isPaying ? "결제 처리중..." : "시작하기"}
 </button>
 
               
@@ -329,6 +342,45 @@ window.location.href = "/mypage";
           </div>
         </div>
       </div>
+      {/* 결제 로딩 모달 */}
+{isPaying && !paymentDone && (
+  <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+    <div className="bg-zinc-900 border border-yellow-400/30 rounded-3xl p-10 text-center shadow-2xl">
+
+      <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+
+      <h3 className="text-xl font-black text-white mb-2">
+        결제 처리중입니다
+      </h3>
+
+      <p className="text-zinc-400 text-sm">
+        잠시만 기다려 주세요
+      </p>
+
+    </div>
+  </div>
+)}
+
+{/* 결제 완료 모달 */}
+{paymentDone && (
+  <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+    <div className="bg-zinc-900 border border-yellow-400/30 rounded-3xl p-10 text-center shadow-2xl">
+
+      <div className="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-6">
+        <Check className="w-8 h-8 text-black" />
+      </div>
+
+      <h3 className="text-xl font-black text-white mb-2">
+        결제가 완료되었습니다
+      </h3>
+
+      <p className="text-zinc-400 text-sm">
+        마이페이지로 이동합니다
+      </p>
+
+    </div>
+  </div>
+)}
     </div>
   );
 };

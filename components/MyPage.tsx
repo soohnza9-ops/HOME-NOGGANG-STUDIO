@@ -431,9 +431,78 @@ const emailLocked = userDoc?.emailLocked === true;
                   >
                     요금제 변경 <ArrowRight className="w-4 h-4" />
                   </button>
-                  <button className="w-full py-4 bg-zinc-800/50 text-zinc-400 font-black rounded-2xl text-sm hover:bg-zinc-800 hover:text-white transition-all border border-zinc-700/30">
-                    구독 해지
-                  </button>
+<button
+  onClick={async () => {
+
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const token = await user.getIdToken();
+
+    const res = await fetch(
+      "https://us-central1-noggang-studio.cloudfunctions.net/use/cancel-subscription",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const json = await res.json();
+
+    if (!res.ok || !json.ok) {
+      alert("구독 해지에 실패했습니다.");
+      return;
+    }
+
+    alert("구독이 해지되었습니다.\n현재 결제 기간까지는 계속 이용할 수 있습니다.");
+
+  }}
+  className="w-full py-4 bg-zinc-800/50 text-zinc-400 font-black rounded-2xl text-sm hover:bg-zinc-800 hover:text-white transition-all border border-zinc-700/30"
+>
+  구독 해지
+</button>
+                  <button
+  onClick={async () => {
+
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const token = await user.getIdToken();
+
+    const res = await fetch(
+      "https://us-central1-noggang-studio.cloudfunctions.net/use/refund",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const json = await res.json();
+
+    if (!res.ok || !json.ok) {
+
+      if (json.reason === "REFUND_PERIOD_EXPIRED") {
+        alert("결제 후 7일이 지나 환불이 불가능합니다.");
+      }
+
+      if (json.reason === "CREDITS_ALREADY_USED") {
+        alert("이미 크레딧을 사용하여 환불이 불가능합니다.");
+      }
+
+      return;
+    }
+
+    alert("환불이 완료되었습니다.");
+
+  }}
+  className="w-full py-4 bg-zinc-800/50 text-zinc-400 font-black rounded-2xl text-sm hover:bg-zinc-800 hover:text-white transition-all border border-zinc-700/30"
+>
+  결제 환불
+</button>
                 </div>
               </div>
             </div>
