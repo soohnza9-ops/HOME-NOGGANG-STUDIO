@@ -449,19 +449,7 @@ const emailLocked = userDoc?.emailLocked === true;
   </button>
 )}
 
-{effectivePlan !== "free" &&
- (credits.script ?? 0) === 0 &&
- (credits.video ?? 0) === 0 && (
-  <button
-    onClick={() => {
-      setRefundResult(null);
-      setShowRefundModal(true);
-    }}
-    className="w-full py-4 bg-zinc-800/50 text-zinc-400 font-black rounded-2xl text-sm hover:bg-zinc-800 hover:text-white transition-all border border-zinc-700/30"
-  >
-    결제 환불
-  </button>
-)}
+
                 </div>
               </div>
             </div>
@@ -713,6 +701,18 @@ try {
   >
     개인정보 처리방침 <ArrowRight className="w-3 h-3" />
   </button>
+
+{effectivePlan !== "free" && (
+  <button
+    onClick={() => {
+      setRefundResult(null);
+      setShowRefundModal(true);
+    }}
+    className="text-sm text-zinc-500 hover:text-yellow-400 transition-colors font-bold flex items-center gap-1.5 border-b border-transparent hover:border-yellow-400/20 pb-1"
+  >
+    결제 환불<ArrowRight className="w-3 h-3" />
+  </button>
+)}
 
 </div>
               </div>
