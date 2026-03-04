@@ -433,7 +433,7 @@ const emailLocked = userDoc?.emailLocked === true;
   요금제 변경 <ArrowRight className="w-4 h-4" />
 </button>
 
-{statusText === "active" && effectivePlan !== "free" && (
+{statusText === "active" && effectivePlan !== "free" && !isTrialActive && (
   <button
     onClick={() => setShowCancelModal(true)}
     className="w-full py-4 bg-zinc-800/50 text-zinc-400 font-black rounded-2xl text-sm hover:bg-zinc-800 hover:text-white transition-all border border-zinc-700/30"
