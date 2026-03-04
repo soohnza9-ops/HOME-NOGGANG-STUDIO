@@ -9,6 +9,7 @@ export type Tool = {
   icon: React.ElementType;
   color: string;
   enabled: boolean;
+  badge?: string;
 };
 
 export interface PricingPlan {

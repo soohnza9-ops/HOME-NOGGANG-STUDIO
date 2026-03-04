@@ -262,7 +262,8 @@ console.log("ERROR MESSAGE:", result?.message);
       return;
     }
 
-    alert("구독이 시작되었습니다.");
+alert("구독이 시작되었습니다.");
+window.location.href = "/mypage";
   } catch (err) {
     console.error(err);
     alert("결제 처리 중 오류 발생");
@@ -302,7 +303,7 @@ console.log("ERROR MESSAGE:", result?.message);
             <div className="grid grid-cols-1 sm:grid-cols-2 md:flex md:flex-nowrap gap-4 pb-2">
               {[
                 { icon: Shield, color: 'text-blue-400', label: '256비트 암호화' },
-                { icon: CreditCard, color: 'text-yellow-400', label: '모든 국내외 카드' },
+                { icon: CreditCard, color: 'text-yellow-400', label: '모든 국내 카드' },
                 { icon: Zap, color: 'text-purple-400', label: '간편 결제 지원' }
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-3 bg-zinc-900/80 px-5 py-3 rounded-2xl border border-zinc-800 transition-all hover:border-zinc-700 group">

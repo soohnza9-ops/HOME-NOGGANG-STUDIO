@@ -19,6 +19,12 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ onSelectTool, onGoDownload }) => {
 
+  
+const getBadge = (id: string) => {
+  if (id === "video") return { text: "SIGNATURE", style: "bg-yellow-400 text-black" };
+  if (id === "image") return { text: "BETA FREE", style: "bg-blue-500 text-white" };
+  return null;
+};
   const [showLockedModal, setShowLockedModal] = useState(false);
 const [lockedPulse, setLockedPulse] = useState<string | null>(null);
   const tools: Tool[] = [
@@ -43,17 +49,17 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
       ),
       icon: ImageIcon,
       color: "bg-blue-500/10 text-blue-500",
-      enabled: false,
+      enabled: true,
     },
     {
       id: "voice",
-      title: "음성 & 자막 생성기",
+      title: "음성 TTS 생성기",
       desc: (
-        <>다양한 목소리로 음성을 만들고<br/>자막을 자동으로 추출합니다.  </>
+         <>다양한 목소리로 1인낭독<br/>또는 2인 대화 음성을 생성합니다.  </>
       ),
       icon: Mic,
       color: "bg-green-500/10 text-green-500",
-      enabled: false,
+      enabled: true,
     },
     {
       id: "lyrics",
@@ -63,7 +69,7 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
       ),
       icon: Music,
       color: "bg-purple-500/10 text-purple-500",
-      enabled: false,
+      enabled: true,
     },
     {
       id: "script",
@@ -131,10 +137,9 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
 
         {/* 🔔 팝업 메시지 추가 위치: 바로 이곳 */}
 
+<div className="max-w-[1400px] mx-auto px-8 md:px-16 space-y-12 bg-black/50 duration-700">
 
-
-
-    <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-zinc-900 to-black border border-zinc-700 p-4 md:p-6 mx-4 md:mx-8">
+    <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-zinc-900 to-black border border-zinc-700 p-6 md:p-8">
 
 
 
@@ -145,7 +150,7 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-400"></span>
             </span>
-            NEW: 노깡 STUDIO v0.0.101 업데이트 완료
+            NEW: 노깡 STUDIO v0.0.103 업데이트 완료
           </div>
           <h1 className="text-2xl md:text-5xl font-black mb-5 leading-snug">
             창작의 한계를 뛰어넘는 <br />
@@ -181,7 +186,7 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
 
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:p-8 mx-4 md:mx-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
         {tools.map((tool) => {
           const Icon = tool.icon;
@@ -200,13 +205,30 @@ onClick={() => {
 
 
 
-             className={`group relative flex flex-col text-left p-5 md:p-8 bg-zinc-900/70 border border-zinc-700 rounded-[2rem] transition-all duration-500 overflow-hidden ${
-
-                tool.enabled
- ? "hover:border-yellow-400/50 hover:bg-zinc-800/90 hover:-translate-y-1"
-: "cursor-pointer"
-              }`}
+className={`group relative flex flex-col text-left p-5 md:p-8 bg-zinc-900/70 border border-zinc-700 rounded-[2rem] transition-all duration-500 ${
+  tool.enabled
+    ? "hover:border-yellow-400/50 hover:bg-zinc-800/90 hover:-translate-y-1"
+    : "cursor-pointer"
+}`}
             >
+{(tool.id === "voice" || 
+  tool.id === "image" || 
+  tool.id === "video" || 
+  tool.id === "lyrics") && (
+  <div className="absolute -top-3 right-4 z-30">
+    <div
+      className={`px-3 py-1 text-[12px] font-black tracking-widest rounded-full 
+      shadow-lg text-black
+      ${
+        tool.id === "video"
+          ? "bg-gradient-to-r from-yellow-300 via-orange-400 to-yellow-500"
+          : "bg-gradient-to-r from-zinc-500 via-zinc-600 to-zinc-800 text-white"
+      }`}
+    >
+      {tool.id === "video" ? "SIGNATURE" : "BETA FREE"}
+    </div>
+  </div>
+)}
               <div className="flex items-center gap-5 mb-5">
                 <div
                   className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 shadow-lg ${tool.color}`}
@@ -218,7 +240,7 @@ onClick={() => {
                 </h4>
               </div>
 
-              <p className="text-zinc-400 text-base leading-relaxed mb-10 z-10">
+              <p className="text-zinc-400 text-base leading-relaxed mb-4 z-10">
                 {tool.desc}
               </p>
 
@@ -252,7 +274,7 @@ onClick={() => {
             </div>
           );
         })}
-      </div>
+      </div></div>
     </div>
   );
 };

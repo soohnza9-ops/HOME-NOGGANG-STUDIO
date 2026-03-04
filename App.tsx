@@ -126,12 +126,18 @@ useEffect(() => {
   path="/"
   element={
     <Dashboard
-      onSelectTool={(id) => {
-        if (id === "video") {
-          window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-          navigate("/guide");
-        }
-      }}
+onSelectTool={(id) => {
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
+  if (
+    id === "video" ||
+    id === "image" ||
+    id === "voice" ||
+    id === "lyrics"
+  ) {
+    navigate("/guide");
+  }
+}}
       onGoDownload={() => {
         window.scrollTo({ top: 0, left: 0, behavior: "auto" });
         navigate("/download");
