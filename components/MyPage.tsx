@@ -628,15 +628,19 @@ try {
     </button>
   </div>
 
-  {couponResult === "success" && (
-    <p className="mt-4 text-green-400 text-sm font-bold">
-      쿠폰이 정상적으로 적용되었습니다.
-    </p>
-  )}
+{couponResult === "success" && (
+  <p className="mt-4 text-green-400 text-sm font-bold leading-relaxed">
+    쿠폰이 정상적으로 적용되었습니다.
+    <br />
+    <span className="text-zinc-400 text-xs font-medium">
+      (본 쿠폰은 이벤트 쿠폰으로 디바이스당 1회 적용됩니다.)
+    </span>
+  </p>
+)}
 
   {couponResult === "error" && (
     <p className="mt-4 text-red-400 text-sm font-bold">
-      유효하지 않은 쿠폰이거나 이미 사용된 코드입니다.
+      유효하지 않은 쿠폰이거나 이미 사용된 쿠폰입니다.
     </p>
   )}
 </section>
