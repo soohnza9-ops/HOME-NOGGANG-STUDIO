@@ -102,7 +102,7 @@ await setDoc(doc(db, "users", cred.user.uid), {
 agreements: {
   agreed: true,
   agreedAt: serverTimestamp(),
-  version: "2026-03-01"
+  version: "2026-03-04"
 }
 });
 
@@ -326,7 +326,7 @@ onClick={async () => {
         agreements: {
           agreed: true,
           agreedAt: serverTimestamp(),
-          version: "2026-03-01"
+          version: "2026-03-04"
         }
       });
 
