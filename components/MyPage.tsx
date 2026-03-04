@@ -663,32 +663,6 @@ try {
 </section>
 
 
-          {/* 3. 결제 내역 */}
-          <section className="bg-gradient-to-r from-zinc-900 to-zinc-800/50 border border-yellow-400/20 rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative overflow-hidden group">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-yellow-400/10 rounded-xl flex items-center justify-center text-yellow-400">
-                  <History className="w-5 h-5" />
-                </div>
-                <h3 className="text-xl font-black text-white">결제 내역</h3>
-              </div>
-              <button className="text-xs font-bold text-zinc-500 hover:text-yellow-400 transition-colors flex items-center gap-1 group">
-                전체 보기{" "}
-                <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-
-            <div className="flex flex-col items-center justify-center py-16 text-zinc-600 border-2 border-dashed border-zinc-800/50 rounded-[2rem] bg-black/20">
-              <div className="p-5 bg-zinc-800/20 rounded-full mb-4">
-                <FileText className="w-8 h-8 opacity-20" />
-              </div>
-              <p className="font-bold text-zinc-400">표시할 결제 내역이 없습니다.</p>
-              <p className="text-xs mt-1 text-zinc-600 font-medium">
-                첫 결제가 완료되면 영수증 확인 및 다운로드가 가능합니다.
-              </p>
-            </div>
-          </section>
-
           {/* 4. 고객지원 */}
           <section className="bg-gradient-to-r from-zinc-900 to-zinc-800/50 border border-yellow-400/20 rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative overflow-hidden group">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
