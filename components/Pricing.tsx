@@ -305,7 +305,7 @@ if (!data.ok) {
 {/* Beta Tools 안내 */}
 <div className="mt-8 flex justify-center">
   <div className="max-w-2xl text-center text-[15px] text-zinc-200 bg-zinc-900/70 border border-zinc-800 rounded-2xl px-7 py-4 leading-relaxed">
-    <span className="text-yellow-400 font-semibold">Beta 기능</span> · AI 사진 생성기 · TTS 생성기 · 음악 가사 싱크
+    <span className="text-yellow-400 font-semibold">Beta 기능</span> · AI 사진 생성 · TTS 생성 · 음악 가사 싱크
     <br/>
     <span className="text-zinc-400 text-[14px]">
       무료 플랜은 일부 사용 제한이 있습니다 · 기능 및 정책은 변경될 수 있습니다

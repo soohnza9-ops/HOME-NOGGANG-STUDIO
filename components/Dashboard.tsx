@@ -43,9 +43,9 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
     },
     {
       id: "image",
-      title: "AI 사진 생성기",
+      title: "AI 사진 생성",
       desc: (
-        <>대본, 텍스트 입력만으로<br/>고퀄리티 이미지를 즉시 생성합니다.  </>
+        <>대본, 텍스트 입력만으로<br/>고퀄리티 나노 바나나 이미지를 즉시 생성합니다.  </>
       ),
       icon: ImageIcon,
       color: "bg-blue-500/10 text-blue-500",
@@ -53,7 +53,7 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
     },
     {
       id: "voice",
-      title: "음성 TTS 생성기",
+      title: "음성 TTS 생성",
       desc: (
          <>다양한 목소리로 1인낭독<br/>또는 2인 대화 음성을 생성합니다.  </>
       ),
@@ -150,7 +150,7 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-400"></span>
             </span>
-            NEW: 노깡 STUDIO v0.0.110 업데이트 완료
+            NEW: 노깡 STUDIO v0.0.111 업데이트 완료
           </div>
           <h1 className="text-2xl md:text-5xl font-black mb-5 leading-snug">
             창작의 한계를 뛰어넘는 <br />
