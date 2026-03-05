@@ -254,7 +254,7 @@ className={`group relative flex flex-col text-left p-5 md:p-8 bg-zinc-900/70 bor
   transform group-hover:scale-110 group-hover:-translate-y-1
 ">
   <ArrowUpRight className="w-6 h-6 transition-transform duration-200 group-hover:translate-x-1 group-hover:-translate-y-1" />
-  이동하기
+  사용 가이드
 </div>
 
 ) : (
