@@ -350,7 +350,7 @@ return matchSearch && matchType && matchFavorite;
                           <p className="text-[15px] font-black text-white tracking-wide">사용자 문의 내용</p>
                           <button 
                             onClick={(e) => handleDelete(e, inq.id)}
-                            className="text-[10px] font-black text-red-500/50 hover:text-red-500 uppercase flex items-center gap-1.5"
+                            className="text-[13px] font-black text-red-500/50 hover:text-red-500 uppercase flex items-center gap-1.5"
                           >
                             <Trash2 className="w-3.5 h-3.5" /> 문의 삭제
                           </button>
@@ -405,10 +405,10 @@ return matchSearch && matchType && matchFavorite;
 
     <button
       onClick={() => handleRegisterReply(inq.id)}
-      className="w-full py-3 bg-yellow-400 text-black font-black rounded-xl hover:bg-yellow-300 transition-all flex items-center justify-center gap-2 text-sm"
+      className="w-full py-4 bg-yellow-400 text-black font-black rounded-xl hover:bg-yellow-300 transition-all flex items-center justify-center gap-2 text-[18px]"
     >
       <Send className="w-4 h-4" />
-      {inq.adminReply ? "답변 수정 완료" : "답변 등록 및 해결 처리"}
+      {inq.adminReply ? "답변 수정 완료" : "답변 등록"}
     </button>
   </div>
 

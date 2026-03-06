@@ -380,25 +380,25 @@ onClick={async () => {
   </div>
 
 
-        <div className="flex items-center gap-3">
-          <span className="text-sm text-zinc-400 font-semibold">
-            {selectedTicket.createdAt?.toDate().toLocaleString("ko-KR")}
-          </span>
+<div className="flex items-center gap-3">
+  <span className="text-sm text-zinc-400 font-semibold">
+    {selectedTicket.createdAt?.toDate().toLocaleString("ko-KR")}
+  </span>
 
-          {!selectedTicket.adminReply && (
-            <button
-              onClick={async () => {
-                const { deleteDoc, doc } = await import("firebase/firestore");
-                await deleteDoc(doc(db, "supportTickets", selectedTicket.id));
-                setView("list");
-                setSelectedTicket(null);
-              }}
-              className="w-9 h-9 flex items-center justify-center rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20"
-            >
-              🗑
-            </button>
-          )}
-        </div>
+  {selectedTicket.status === "open" && (
+    <button
+      onClick={async () => {
+        const { deleteDoc, doc } = await import("firebase/firestore");
+        await deleteDoc(doc(db, "supportTickets", selectedTicket.id));
+        setView("list");
+        setSelectedTicket(null);
+      }}
+      className="ml-auto w-9 h-9 flex items-center justify-center rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20"
+    >
+      🗑
+    </button>
+  )}
+</div>
       </div>
 
       {/* 본문 */}
