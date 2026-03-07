@@ -96,9 +96,9 @@ const sections = [
   },
 
   // 🔥 새 메뉴
-  { title: 'AI 사진 생성 (Beta)', icon: Play, content: '준비중입니다.' },
-  { title: '음성 TTS 생성 (Beta)', icon: Play, content: '준비중입니다.' },
-  { title: '음악 가사 싱크 (Beta)', icon: Play, content: '준비중입니다.' },
+  { title: 'AI 사진 생성 (Beta)', icon: Play, content: '베타 기능은 현재 업데이트 및 개선 중이며 무료 플랜에서는 일부 사용 제한이 있을 수 있습니다. \n 베타 기능의 AI 모델은 모두 구글 API 키로 호출되며 기능 및 정책은 변경될 수 있습니다.',media: { videos: ['/videos/BETA-IMEAES.mp4'] } },
+  { title: 'AI 음성 TTS (Beta)', icon: Play, content: '베타 기능은 현재 업데이트 및 개선 중이며 무료 플랜에서는 일부 사용 제한이 있을 수 있습니다. \n 베타 기능의 AI 모델은 모두 구글 API 키로 호출되며 기능 및 정책은 변경될 수 있습니다. \n 구글 TTS 모델 및 API 특성에 따라 간헐적으로 간혹 음성 품질이 저하되거나 생성 오류가 발생할 수 있으며\n 대본을 여러 문장으로 나누어 생성하면 보다 안정적으로 사용할 수 있습니다.',media: { videos: ['/videos/BETA-TTS.mp4'] } },
+  { title: '음악 가사 싱크 (Beta)', icon: Play, content: '베타 기능은 현재 업데이트 및 개선 중이며 무료 플랜에서는 일부 사용 제한이 있을 수 있습니다. \n 이 기능은 구글 API키가 필요하지 않습니다.',media: { videos: ['/videos/BETA-MUSIC.mp4'] } },
         {
         title: '자주 묻는 질문',
         icon: Play,
@@ -211,9 +211,9 @@ ${
               <h3 className="text-2xl font-black">{activeSection.title}</h3>
             </div>
 
-            <div className="text-zinc-400 leading-loose mb-8">
-              {activeSection.content}
-            </div>
+<div className="text-zinc-400 leading-loose mb-8 whitespace-pre-line">
+  {activeSection.content}
+</div>
 
             {/* 🔥 미디어 영역 (다운로드 섹션에서만 출력) */}
 {activeSection.media && (
