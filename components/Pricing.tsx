@@ -24,7 +24,7 @@ const [paymentFailed, setPaymentFailed] = useState(false);
       features: [
         '대본 분석 5회',
         '영상 5개 저장',
-        '대본 3,000자 입력',        
+        '대본 분석 1회\n 최대 3,000자 입력',        
         '성우 4종',
         '고급 AI 설정 X',
         '워터마크 ON'
@@ -43,7 +43,7 @@ const [paymentFailed, setPaymentFailed] = useState(false);
       features: [
         '대본 분석 20회',
         '영상 20개 저장',
-        '대본 20,000자 입력',
+        '대본 분석 1회\n 최대 20,000자 입력',
         '성우 전체',
         '고급 AI 설정 X',
         '워터마크 OFF'
@@ -63,7 +63,7 @@ const [paymentFailed, setPaymentFailed] = useState(false);
       features: [
         '대본 분석 50회',
         '영상 50개 저장',
-        '대본 35,000자 입력',
+        '대본 분석 1회\n 최대 35,000자 입력',
         '성우 전체',
         '고급 AI 설정 O',
         '워터마크 OFF'
@@ -84,7 +84,7 @@ const [paymentFailed, setPaymentFailed] = useState(false);
       features: [
         '대본 분석 무제한',
         '영상 무제한 저장',
-        '대본 50,000자 입력',
+        '대본 분석 1회\n 최대 50,000자 입력',
         '성우 전체',
         'BGM 전체',
         '폰트 전체',
@@ -190,7 +190,7 @@ const [paymentFailed, setPaymentFailed] = useState(false);
                         <Check className="w-3 h-3" />
                       </div>
                     )}
-<span className={`${feature.endsWith('X') ? 'text-zinc-200' : 'text-zinc-300'}`}>
+<span className={`whitespace-pre-line ${feature.endsWith('X') ? 'text-zinc-200' : 'text-zinc-300'}`}>
   {feature}
 </span>
                   </div>
