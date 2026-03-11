@@ -198,8 +198,8 @@ let plan = isTrialActive
 setEffectivePlan(plan.toLowerCase());
 
 
-// ✅ FREE 플랜이면 서버 status 한 번만 호출
-if (plan === "free") {
+// 서버 상태 동기화
+{
   const deviceApi = (window as any).NOGGANG_DEVICE;
 
   let deviceId: string | null = null;
