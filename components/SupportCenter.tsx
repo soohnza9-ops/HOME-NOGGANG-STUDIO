@@ -481,7 +481,7 @@ onClick={async () => {
                 <AlertCircle className="w-6 h-6 text-yellow-400 shrink-0 mt-0.5" />
 <p className="text-yellow-400/90 text-sm font-bold leading-relaxed">
   • 결제 후 7일 이내이며 사용 횟수가 0회인 경우에만 환불이 가능합니다.
-  • 환불은 내 정보 → 결제 환불 페이지에서 즉시 진행할 수 있습니다.<br />
+  • 빠른 환불은 내 정보 → 결제 환불 페이지에서 즉시 진행할 수 있습니다.<br />
   • 주문번호는 결제 후 발송된 메일 "NHN KCP 딥탁시스템 정기과금"에서 확인할 수 있습니다.
 </p>
               </div>
