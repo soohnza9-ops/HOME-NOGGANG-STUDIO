@@ -57,7 +57,7 @@ useEffect(() => {
       id: "image",
       title: "AI 사진 생성",
       desc: (
-        <>대본, 텍스트 입력만으로<br/>고퀄리티 나노 바나나 이미지를 즉시 생성합니다.  </>
+        <>대본, 텍스트 입력만으로 고퀄리티 <br/>나노 바나나 이미지를 즉시 생성합니다.  </>
       ),
       icon: ImageIcon,
       color: "bg-blue-500/10 text-blue-500",
