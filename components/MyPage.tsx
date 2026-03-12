@@ -430,7 +430,7 @@ const emailLocked = userDoc?.emailLocked === true;
   onClick={() => navigate("/pricing")}
   className="w-full py-4 bg-yellow-400 text-black font-black rounded-2xl text-sm hover:bg-yellow-300 transition-all flex items-center justify-center gap-2 shadow-lg shadow-yellow-400/10"
 >
-  요금제 변경 <ArrowRight className="w-4 h-4" />
+  요금제 <ArrowRight className="w-4 h-4" />
 </button>
 
 {statusText === "active" && effectivePlan !== "free" && !isTrialActive && (
