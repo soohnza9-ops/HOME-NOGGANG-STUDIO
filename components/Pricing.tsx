@@ -108,11 +108,14 @@ const [paymentFailed, setPaymentFailed] = useState(false);
   <br className="md:hidden" />
   <span className="text-yellow-400">맞춤형 플랜</span>
 </h2>
-        <p className="text-zinc-500 text-lg mb-12 max-w-2xl mx-auto font-medium">
-          당신의 크리에이티브 가치를 한 단계 더 높여보세요. <br className="hidden md:block"/>
-          프로젝트의 규모에 최적화된 최신 AI 도구들을 제공합니다.
-        </p>
-        
+<p className="text-zinc-500 text-lg mb-4 mx-auto font-medium">
+  당신의 크리에이티브 가치를 한 단계 더 높여보세요.
+  프로젝트의 규모에 최적화된 최신 AI 도구들을 제공합니다.
+</p>
+
+<p className="text-zinc-500 text-sm text-center">
+  유료 플랜은 월 구독 방식 · 언제든지 마이페이지에서 해지 가능합니다.
+</p>
 </div> 
 
       {/* Pricing Cards Grid */}
@@ -176,7 +179,7 @@ const [paymentFailed, setPaymentFailed] = useState(false);
 </div>
               </div>
 
-              <div className="space-y-3 mb-8">
+              <div className="space-y-3 mb-8 flex-grow">
                 {plan.features.map((feature, idx) => (
                   <div key={idx} className="flex items-center gap-3 text-sm font-medium transition-all group-hover:translate-x-1">
                     {feature.endsWith('X') ? (
@@ -405,7 +408,7 @@ if (!data.ok) {
       </div>
 
       <h3 className="text-xl font-black text-white mb-2">
-        결제가 실패했습니다
+        결제에 실패했습니다
       </h3>
 
       <p className="text-zinc-400 text-sm">
