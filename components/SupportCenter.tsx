@@ -57,7 +57,21 @@ const [message, setMessage] = useState("");
 const [inquiries, setInquiries] = useState<Ticket[]>([]);
   const [activeTab, setActiveTab] = useState<TabState>('inquiry');
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
-  
+  const [refundReason, setRefundReason] = useState("");
+const [refundMessage, setRefundMessage] = useState("");
+
+useEffect(() => {
+  if (user?.email) {
+    setRefundMessage(
+`아이디 : ${user.email}
+주문번호 : 
+
+상세 사유 :
+`
+    );
+  }
+}, [user]);
+
   useEffect(() => {
     // 고객센터 페이지로 "진입할 때마다" 초기화
     setView('list');
@@ -176,9 +190,9 @@ if (!loading && !user) {
                   <table className="w-full text-left border-collapse">
                     <thead className="hidden md:table-header-group">
                     <tr className="border-b border-zinc-700 bg-zinc-800/80">
-<th className="px-8 py-5 text-xs font-black text-zinc-400 uppercase tracking-widest w-40">상태</th>
-<th className="px-4 md:px-12 py-4 text-xs font-black text-zinc-400 uppercase tracking-widest text-left">제목</th>
-<th className="hidden md:table-cell px-8 py-5 text-xs font-black text-zinc-400 uppercase tracking-widest text-right">작성일</th>
+<th className="px-8 py-5 text-sm font-black text-zinc-400 uppercase tracking-widest w-40">상태</th>
+<th className="px-4 md:px-12 py-4 text-sm font-black text-zinc-400 uppercase tracking-widest text-left">제목</th>
+<th className="hidden md:table-cell px-8 py-5 text-sm font-black text-zinc-400 uppercase tracking-widest text-right">작성일</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -248,7 +262,7 @@ if (!loading && !user) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-3">
-                    <label className="text-xs font-black text-zinc-500 uppercase tracking-widest ml-1">문의 유형</label>
+                    <label className="text-sm font-black text-zinc-500 uppercase tracking-widest ml-1">문의 유형</label>
                     <div className="relative">
                      <select
   value={selectedType}
@@ -268,7 +282,7 @@ if (!loading && !user) {
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <label className="text-xs font-black text-zinc-500 uppercase tracking-widest ml-1">제목</label>
+                    <label className="text-sm font-black text-zinc-500 uppercase tracking-widest ml-1">제목</label>
 <input
   type="text"
   value={title}
@@ -287,7 +301,7 @@ if (!loading && !user) {
                 </div>
 
                 <div className="space-y-3">
-                  <label className="text-xs font-black text-zinc-500 uppercase tracking-widest ml-1">문의 내용</label>
+                  <label className="text-sm font-black text-zinc-500 uppercase tracking-widest ml-1">문의 내용</label>
 <textarea 
   rows={8}
   value={message}
@@ -309,6 +323,16 @@ if (!loading && !user) {
   disabled={!user}
 onClick={async () => {
   if (!user) return;
+
+  if (!title.trim()) {
+    alert("제목을 입력해주세요.");
+    return;
+  }
+
+  if (!message.trim()) {
+    alert("문의 내용을 입력해주세요.");
+    return;
+  }
 
   await addDoc(collection(db, "supportTickets"), {
     uid: user.uid,
@@ -361,7 +385,7 @@ onClick={async () => {
 <div className="p-6 border-b border-zinc-800">
   <div className="flex items-center gap-4 flex-wrap">
     <span
-      className={`text-xs font-black px-3 py-1.5 rounded-full border shrink-0 ${
+      className={`text-sm font-black px-3 py-1.5 rounded-full border shrink-0 ${
         selectedTicket.status === "done"
           ? "text-green-400 border-green-400/30 bg-green-400/10"
           : "text-yellow-400 border-yellow-400/30 bg-yellow-400/10"
@@ -406,7 +430,7 @@ onClick={async () => {
 
         {/* 사용자 문의 */}
         <div className="space-y-3">
-          <p className="text-xs font-black tracking-widest text-zinc-400">
+          <p className="text-sm font-black tracking-widest text-zinc-400">
             사용자 문의 내용
           </p>
 <div className="bg-black/60 border border-zinc-800 rounded-2xl p-6 text-white leading-relaxed text-base whitespace-pre-wrap">
@@ -418,10 +442,10 @@ onClick={async () => {
         {selectedTicket.adminReply ? (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-xs font-black tracking-widest text-yellow-400">
+              <p className="text-sm font-black tracking-widest text-yellow-400">
                 운영자 답변
               </p>
-              <span className="text-xs text-zinc-500 font-semibold">
+              <span className="text-sm text-zinc-500 font-semibold">
                 {selectedTicket.repliedAt?.toDate().toLocaleString("ko-KR")}
               </span>
             </div>
@@ -455,41 +479,77 @@ onClick={async () => {
               </h3>
               <div className="bg-yellow-400/5 border border-yellow-400/10 p-6 rounded-[1.5rem] flex items-start gap-4 shadow-inner">
                 <AlertCircle className="w-6 h-6 text-yellow-400 shrink-0 mt-0.5" />
-                <p className="text-yellow-400/90 text-sm font-bold leading-relaxed">
-                  결제 후 7일 이내이며 사용 횟수가 0회인 경우 환불이 가능합니다
-                </p>
+<p className="text-yellow-400/90 text-sm font-bold leading-relaxed">
+  • 결제 후 7일 이내이며 사용 횟수가 0회인 경우에만 환불이 가능합니다.
+  • 환불은 내 정보 → 결제 환불 페이지에서 즉시 진행할 수 있습니다.<br />
+  • 주문번호는 결제 후 발송된 메일 "NHN KCP 딥탁시스템 정기과금"에서 확인할 수 있습니다.
+</p>
               </div>
             </div>
 
             <div className="space-y-8">
               <div className="grid grid-cols-1 gap-8">
                 <div className="space-y-3">
-                  <label className="text-xs font-black text-zinc-500 uppercase tracking-widest ml-1">환불 사유 선택</label>
+                  <label className="text-sm font-black text-zinc-500 uppercase tracking-widest ml-1">환불 사유 선택</label>
                   <div className="relative">
-                    <select className="w-full bg-black border border-zinc-800 rounded-xl py-4 px-5 text-white focus:outline-none focus:border-yellow-400/50 transition-colors appearance-none font-bold cursor-pointer">
-                      <option>환불 사유를 선택하세요</option>
-                      <option>서비스 불만족</option>
-                      
-                      <option>기능 미지원</option>
-                      <option>오결제 / 실수로 구매</option>
-                      <option>기타</option>
-                    </select>
+<select
+  value={refundReason}
+  onChange={(e) => setRefundReason(e.target.value)}
+  className="w-full bg-black border border-zinc-800 rounded-xl py-4 px-5 text-white focus:outline-none focus:border-yellow-400/50 transition-colors appearance-none font-bold cursor-pointer"
+>
+  <option value="">환불 사유를 선택하세요</option>
+  <option value="서비스 불만족">서비스 불만족</option>
+  <option value="기능 미지원">기능 미지원</option>
+  <option value="오결제 / 실수로 구매">오결제 / 실수로 구매</option>
+  <option value="기타">기타</option>
+</select>
                     <ChevronRight className="absolute right-5 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 rotate-90 pointer-events-none" />
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <label className="text-xs font-black text-zinc-500 uppercase tracking-widest ml-1">상세 내용 (선택)</label>
-                  <textarea 
-                    rows={4} 
-                    placeholder="환불 사유를 입력하세요" 
-                    className="w-full bg-black border border-zinc-800 rounded-[1.5rem] py-5 px-6 text-white focus:outline-none focus:border-yellow-400/50 transition-colors font-medium leading-relaxed resize-none placeholder:text-zinc-700"
-                  ></textarea>
+                  <label className="text-sm font-black text-zinc-500 uppercase tracking-widest ml-1">상세 내용</label>
+<textarea
+  rows={8}
+  value={refundMessage}
+  onChange={(e) => setRefundMessage(e.target.value)}
+  placeholder="환불 사유를 입력하세요"
+  className="w-full bg-black border border-zinc-800 rounded-[1.5rem] py-5 px-6 text-white focus:outline-none focus:border-yellow-400/50 transition-colors font-medium leading-relaxed resize-none placeholder:text-zinc-700"
+/>
                 </div>
               </div>
 
-              <button className="w-full py-5 bg-zinc-800 text-white font-black rounded-[1.5rem] hover:bg-red-500/10 hover:text-red-500 border border-zinc-700/50 hover:border-red-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-3 shadow-lg">
-                <RotateCcw className="w-5 h-5" /> 환불 요청하기
-              </button>
+<button
+onClick={async () => {
+  if (!user) return;
+
+  if (!refundReason) {
+    alert("환불 사유를 선택해주세요.");
+    return;
+  }
+
+  if (!refundMessage.trim()) {
+    alert("환불 내용을 입력해주세요.");
+    return;
+  }
+
+  await addDoc(collection(db, "supportTickets"), {
+    uid: user.uid,
+    email: user.email,
+    type: "환불 요청",
+    title: `환불 요청 - ${refundReason}`,
+    content: refundMessage,
+    status: "open",
+    createdAt: serverTimestamp(),
+  });
+
+  setRefundReason("");
+  setRefundMessage("");
+  setActiveTab("inquiry");
+}}
+  className="w-full py-5 bg-zinc-800 text-white font-black rounded-[1.5rem] hover:bg-red-500/10 hover:text-red-500 border border-zinc-700/50 hover:border-red-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-3 shadow-lg"
+>
+  <RotateCcw className="w-5 h-5" /> 환불 요청하기
+</button>
             </div>
           </section>
 
