@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ImageIcon,
   Mic,
@@ -9,6 +9,7 @@ import {
   Video,
   ArrowUpRight,
   Lock,
+  Youtube
 } from "lucide-react";
 import { Tool } from "../types";
 
@@ -27,6 +28,17 @@ const getBadge = (id: string) => {
 };
   const [showLockedModal, setShowLockedModal] = useState(false);
 const [lockedPulse, setLockedPulse] = useState<string | null>(null);
+const [bannerIndex, setBannerIndex] = useState(0);
+const [autoSlide, setAutoSlide] = useState(true);
+useEffect(() => {
+  if (!autoSlide) return;
+
+  const interval = setInterval(() => {
+    setBannerIndex((prev) => (prev + 1) % 2);
+  }, 10000);
+
+  return () => clearInterval(interval);
+}, [autoSlide]);
   const tools: Tool[] = [
     {
       id: "video",
@@ -104,7 +116,7 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
   };
 
   return (
-   <div className="space-y-12 bg-black/50 duration-700">
+<div className="max-w-[1400px] mx-auto px-8 md:px-16 space-y-12 bg-black/50 duration-700">
 
 {showLockedModal && (
   <div
@@ -134,57 +146,140 @@ const [lockedPulse, setLockedPulse] = useState<string | null>(null);
   </div>
 )}
 
-
-        {/* 🔔 팝업 메시지 추가 위치: 바로 이곳 */}
-
-<div className="max-w-[1400px] mx-auto px-8 md:px-16 space-y-12 bg-black/50 duration-700">
-
-    <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-zinc-900 to-black border border-zinc-700 p-6 md:p-8">
+{/* 🔔 팝업 메시지 추가 위치: 바로 이곳 */}
 
 
 
+  <div className="relative overflow-hidden rounded-[2.5rem] border border-zinc-700 min-h-[280px] md:min-h-[320px]">
 
-        <div className="relative z-10 max-w-2xl ml-2 md:ml-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 text-xs font-bold mb-6">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-400"></span>
-            </span>
-            NEW: 노깡 STUDIO v0.0.120 업데이트 완료
+    <div
+      className="flex w-full transition-transform duration-700 ease-in-out"
+      style={{ transform: `translateX(-${bannerIndex * 100}%)` }}
+    >
+
+      {/* 1번 배너 */}
+      <div className="w-full flex-none">
+        <div className="bg-gradient-to-br from-zinc-900 to-black p-6 md:p-8 relative overflow-hidden h-full">
+
+          <div className="relative z-10 max-w-2xl ml-2 md:ml-10">
+
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 text-xs font-bold mb-6">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-400"></span>
+              </span>
+              NEW: 노깡 STUDIO v0.0.120 업데이트 완료
+            </div>
+
+            <h1 className="text-2xl md:text-5xl font-black mb-5 leading-snug">
+              창작의 한계를 뛰어넘는 <br />
+              <span className="text-yellow-400">AI 크리에이티브</span>
+            </h1>
+
+            <p className="text-zinc-400 text-base mb-6 leading-relaxed max-w-lg">
+              최신 생성형 AI 기술을 활용하여 당신의 상상력을 현실로 만드세요. <br />
+              복잡한 툴 없이, 단 한 번의 클릭으로 완성도 높은 콘텐츠를 제작합니다.
+            </p>
+
+            <div className="flex flex-wrap gap-4">
+              <button
+                onClick={onGoDownload}
+                className="px-8 py-3 bg-yellow-400 text-black font-black rounded-2xl"
+              >
+                지금 시작하기
+              </button>
+            </div>
+
           </div>
-          <h1 className="text-2xl md:text-5xl font-black mb-5 leading-snug">
-            창작의 한계를 뛰어넘는 <br />
-            <span className="text-yellow-400">AI 크리에이티브</span>
-          </h1>
-         <p className="text-zinc-400 text-base mb-6 leading-relaxed max-w-lg">
-            최신 생성형 AI 기술을 활용하여 당신의 상상력을 현실로 만드세요. <br />
-            복잡한 툴 없이, 단 한 번의 클릭으로 완성도 높은 콘텐츠를 제작합니다.
-          </p>
-          <div className="flex flex-wrap gap-4">
-<button
-  onClick={onGoDownload}
-  className="px-8 py-3 bg-yellow-400 text-black font-black rounded-2xl ..."
->
-  지금 시작하기
-</button>
+
+          {/* 배경 효과 */}
+          <div className="absolute top-1/2 right-12 -translate-y-1/2 w-72 h-72 bg-yellow-400/15 blur-[90px] rounded-full"></div>
+
+          <div className="absolute -right-24 -bottom-24 w-[36rem] h-[36rem] bg-yellow-400/12 blur-[140px] rounded-full"></div>
+
+          <div className="absolute top-1/2 right-12 -translate-y-1/2 w-80 h-80 opacity-10 pointer-events-none select-none">
+            <img
+              src="/logo.png"
+              alt="NOGGANG Studio"
+              className="w-full h-full object-contain rotate-12"
+              draggable={false}
+            />
           </div>
+
         </div>
+      </div>
 
-<div className="absolute top-1/2 right-12 -translate-y-1/2 w-72 h-72 bg-yellow-400/15 blur-[90px] rounded-full"></div>
+      {/* 2번 배너 */}
+{/* 2번 배너 */}
+<div className="w-full flex-none">
+  <div className="bg-gradient-to-br from-zinc-900 to-black p-6 md:p-8 relative overflow-hidden h-full">
 
-        {/* Abstract Background Elements */}
-       <div className="absolute -right-24 -bottom-24 w-[36rem] h-[36rem] bg-yellow-400/12 blur-[140px] rounded-full"></div>
+    {/* 텍스트 영역 */}
+    <div className="relative z-10 max-w-2xl ml-2 md:ml-10">
 
-<div className="absolute top-1/2 right-12 -translate-y-1/2 w-80 h-80 opacity-10 pointer-events-none select-none">
-  <img
-    src="/logo.png"
-    alt="NOGGANG Studio"
-    className="w-full h-full object-contain rotate-12"
-    draggable={false}
-  />
+      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 text-xs font-bold mb-6">
+        NEW FEATURE
+      </div>
+
+      <h1 className="text-2xl md:text-5xl font-black mb-5 leading-snug">
+        AI 영상 제작의<br />
+        <span className="text-yellow-400">완전 자동화</span>
+      </h1>
+
+<p className="text-zinc-400 text-base mb-6 leading-relaxed max-w-lg">
+  대본만 입력하면 
+  이미지 생성, 음성 생성, 영상 제작까지<br />
+  한 번에 자동으로 진행됩니다.
+</p>
+
+      <button
+  onClick={() =>
+    window.open("https://www.youtube.com/@%EB%85%B8%EA%B9%A1STUDIO", "_blank")
+  }
+className="px-8 py-3 bg-yellow-400 hover:bg-yellow-300 text-black font-black rounded-2xl flex items-center gap-2"
+      >
+        노깡스튜디오 <Youtube className="w-6 h-6 text-red-600" />
+      </button>
+
+    </div>
+
+    {/* 오른쪽 영상 (텍스트 div 밖으로 이동) */}
+    <div className="absolute right-8 top-1/2 -translate-y-1/2 w-[480px] hidden lg:block z-50">
+      <div className="relative w-full pt-[56.25%] rounded-xl overflow-hidden border border-zinc-700 shadow-2xl">
+        <iframe
+          className="absolute top-0 left-0 w-full h-full"
+          src="https://www.youtube.com/embed/G7kB3BrugPk?autoplay=1&mute=1&controls=1"
+          title="NOGGANG STUDIO"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        />
+      </div>
+      
+    </div>
+
+  </div>
+  
 </div>
 
-      </div>
+    </div>
+<div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-3 z-30">
+  {[0, 1].map((i) => (
+    <button
+      key={i}
+      onClick={() => {
+  setBannerIndex(i);
+  setAutoSlide(false);
+}}
+      className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+        bannerIndex === i
+          ? "bg-yellow-400 scale-110"
+          : "bg-white/40 hover:bg-white"
+      }`}
+    />
+  ))}
+</div>
+  </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
@@ -274,7 +369,7 @@ className={`group relative flex flex-col text-left p-5 md:p-8 bg-zinc-900/70 bor
             </div>
           );
         })}
-      </div></div>
+      </div>
     </div>
   );
 };

@@ -219,7 +219,7 @@ return matchSearch && matchType && matchFavorite;
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="이메일 또는 제목으로 검색..."
-            className="w-full bg-black border border-zinc-800 rounded-2xl py-4 px-5 text-white focus:outline-none focus:border-yellow-400/50 transition-colors text-sm overflow-hidden resize-none"
+           className="w-full bg-black border border-zinc-800 rounded-2xl py-4 pl-12 pr-5 text-white focus:outline-none focus:border-yellow-400/50 transition-colors text-sm overflow-hidden resize-none"
           />
         </div>
 <div className="relative">

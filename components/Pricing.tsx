@@ -308,7 +308,7 @@ if (!data.ok) {
     <span className="text-yellow-400 font-semibold">Beta 기능</span> · AI 사진 생성 · TTS 생성 · 음악 가사 싱크
     <br/>
     <span className="text-zinc-400 text-[14px]">
-      무료 플랜은 일부 사용 제한이 있습니다 · 기능 및 정책은 변경될 수 있습니다
+      무료 플랜은 일부 사용 제한이 있을 수 있으며 · 기능 및 정책은 변경될 수 있습니다
     </span>
   </div>
 </div>
