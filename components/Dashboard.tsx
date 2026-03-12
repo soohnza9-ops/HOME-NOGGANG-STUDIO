@@ -222,14 +222,14 @@ useEffect(() => {
       </div>
 
       <h1 className="text-2xl md:text-5xl font-black mb-5 leading-snug">
-        AI 영상 제작의<br />
+        AI 콘텐츠 제작의<br />
         <span className="text-yellow-400">완전 자동화</span>
       </h1>
 
 <p className="text-zinc-400 text-base mb-6 leading-relaxed max-w-lg">
   대본만 입력하면 
-  이미지 생성, 음성 생성, 영상 제작까지<br />
-  한 번에 자동으로 진행됩니다.
+  장면에 맞는 이미지를 만들고<br />
+  AI 음성을 생성해 자동으로 영상으로 제작합니다.
 </p>
 
       <button
