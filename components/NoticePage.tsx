@@ -101,9 +101,31 @@ const NoticePage: React.FC = () => {
               {/* 내용 */}
               {isOpen && (
                 <div className="px-6 pb-6 pt-4 border-t border-yellow-400/30">
-                  <div className="text-zinc-300 leading-relaxed whitespace-pre-line">
-                    {notice.content}
-                  </div>
+<div className="text-zinc-300 leading-relaxed whitespace-pre-line">
+{notice.content.split(/\r?\n/).map((line, i) => (
+  <p key={i} className="min-h-[1.5em]">
+    {line.trim() === "" ? (
+      <br />
+    ) : (
+      line.split(/(https?:\/\/[^\s]+)/g).map((part, j) =>
+        /^https?:\/\/[^\s]+$/.test(part) ? (
+          <a
+            key={j}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-yellow-400 underline break-all"
+          >
+            {part}
+          </a>
+        ) : (
+          part
+        )
+      )
+    )}
+  </p>
+))}
+</div>
                 </div>
               )}
             </div>

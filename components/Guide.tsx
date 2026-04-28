@@ -31,19 +31,27 @@ const sections = [
       {
         title: '간단 사용 가이드',
         icon: Play,
-        content: '대본 작성 영역에 제작하고 싶은 영상의 주제나 대사를 입력하세요.',
+content: `유튜브 쇼츠, 틱톡, 마케팅 영상 등을 만들고 싶다면
+대본만 입력하면 AI가 자동으로 영상을 제작합니다.
+
+노깡 STUDIO는 AI 영상 자동 제작 기능을 통해
+장면 분석, 이미지 생성, TTS 음성 생성, 영상 합성을
+한 번에 처리할 수 있습니다.
+
+영상 제작을 처음 하는 사람도 쉽고 빠르게
+쇼츠 영상과 광고 영상을 만들 수 있습니다.`,
         media: { videos: ['/videos/guide.mp4'] }
       },
       {
         title: '설정 화면',
         icon: Play,
-        content: '화면 비율 자막, 이미지 스타일 등 다양한 설정을 지원합니다.',
+content: '영상 비율, 자막 스타일, 이미지 스타일 등을 설정하여 유튜브 롱폼 영상 제작에 최적화할 수 있으며 쇼츠, 릴스, 틱톡 같은 숏폼 영상도 함께 제작할 수 있습니다.',
         media: { images: ['/images/settings.png'] }
       },
       {
         title: '편집 화면',
         icon: Play,
-        content: '간단한 편집으로 영상을 제작할 수 있습니다.',
+content: 'AI로 생성된 영상을 간단하게 편집하여 유튜브 롱폼 영상을 빠르게 완성할 수 있으며 쇼츠, 릴스, 틱톡 같은 숏폼 영상도 함께 제작할 수 있습니다.',
         media: { images: ['/images/edit.png'] }
       },
       {
@@ -123,7 +131,7 @@ const flatSections = sections.flatMap((s: any) =>
       <div className="mb-16">
         <h2 className="text-4xl font-black mb-4">사용가이드</h2>
         <p className="text-zinc-500">
-          노깡 STUDIO를 200% 활용하기 위한 가이드를 확인하세요.
+AI 영상 자동화 제작, 유튜브 롱폼, 숏폼 영상 만드는 방법을 노깡 STUDIO 사용가이드에서 확인하세요.
         </p>
       </div>
 
