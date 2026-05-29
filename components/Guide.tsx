@@ -14,7 +14,7 @@ const sections = [
     }
   },
   {
-    title: 'API키 발급 가이드',
+    title: 'API 키 발급 가이드',
     icon: Play,
     content: '프로그램 설치 후 계정 로그인을 진행하세요. 우측 상단의 API KEY 입력 버튼을 클릭하여 발급받은 키를 입력해야 합니다.',
     media: {
