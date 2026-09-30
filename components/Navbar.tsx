@@ -6,7 +6,6 @@ import {
   LogOut,
   Menu,
   LayoutDashboard,
-  CreditCard,
   BookOpen,
   Download,
 } from "lucide-react";
@@ -32,12 +31,12 @@ const Navbar: React.FC<NavbarProps> = ({
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
     });
+
     return () => unsub();
   }, []);
 
   const navItems = [
     { path: "/", label: "HOME", icon: LayoutDashboard },
-    { path: "/pricing", label: "요금제", icon: CreditCard },
     { path: "/guide", label: "사용 가이드", icon: BookOpen },
     { path: "/download", label: "다운로드", icon: Download },
   ];
@@ -45,6 +44,7 @@ const Navbar: React.FC<NavbarProps> = ({
   return (
     <nav className="sticky top-0 z-40 bg-black/80 backdrop-blur-md border-b border-zinc-800 px-4 md:px-6 py-3 md:py-4">
       <div className="max-w-[1600px] mx-auto flex items-center justify-between">
+
         <div className="flex items-center gap-4">
           <button
             onClick={onToggleSidebar}
@@ -65,6 +65,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 draggable={false}
               />
             </div>
+
             <span className="font-black text-base md:text-xl tracking-tight uppercase">
               노깡 STUDIO
             </span>
@@ -104,9 +105,9 @@ const Navbar: React.FC<NavbarProps> = ({
                   {(user?.email || user?.displayName || "G")[0].toUpperCase()}
                 </div>
 
-<span className="hidden md:block text-sm font-medium text-zinc-300">
-  {user?.email || user?.displayName || "Google User"}
-</span>
+                <span className="hidden md:block text-sm font-medium text-zinc-300">
+                  {user?.email || user?.displayName || "Google User"}
+                </span>
               </div>
 
               <button
@@ -118,15 +119,15 @@ const Navbar: React.FC<NavbarProps> = ({
               </button>
             </div>
           ) : (
-<button
-  onClick={onLoginClick}
-  className="px-6 py-2 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all text-sm"
->
-  로그인
-</button>
-
+            <button
+              onClick={onLoginClick}
+              className="px-6 py-2 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-all text-sm"
+            >
+              로그인
+            </button>
           )}
         </div>
+
       </div>
     </nav>
   );

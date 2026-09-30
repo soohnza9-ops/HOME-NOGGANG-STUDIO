@@ -250,8 +250,6 @@ return matchSearch && matchType && matchFavorite;
     <div className="absolute right-0 mt-2 w-48 bg-zinc-900 border border-zinc-800 rounded-xl shadow-xl z-50 overflow-hidden">
       {[
         "전체",
-        "환불 문의",
-        "결제 / 요금제",
         "사용 방법",
         "오류 제보",
         "개선 사항",

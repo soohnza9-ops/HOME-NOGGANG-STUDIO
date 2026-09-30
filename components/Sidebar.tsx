@@ -2,7 +2,6 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   User,
-  CreditCard,
   BookOpen,
   Headset,
   Download,
@@ -30,34 +29,42 @@ const Sidebar: React.FC<SidebarProps> = ({
   const menuItems = [
     { path: "/mypage", label: "내정보", icon: User },
     { path: "/", label: "HOME", icon: LayoutDashboard },
-    { path: "/pricing", label: "요금제", icon: CreditCard },
     { path: "/guide", label: "사용가이드", icon: BookOpen },
-      { path: "/notice", label: "공지사항", icon: Bell },
+    { path: "/notice", label: "공지사항", icon: Bell },
     { path: "/support", label: "고객센터", icon: Headset },
     { path: "/download", label: "다운로드", icon: Download },
+
     ...(isAdmin
-        ? [
-      { path: "/admin/support", label: "운영자 고객센터", icon: ShieldCheck },
-      { path: "/admin/notice", label: "운영자 공지 등록", icon: Bell },
-    ]
+      ? [
+          {
+            path: "/admin/support",
+            label: "운영자 고객센터",
+            icon: ShieldCheck,
+          },
+          {
+            path: "/admin/notice",
+            label: "운영자 공지 등록",
+            icon: Bell,
+          },
+        ]
       : []),
   ];
 
   return (
-<aside
-  className={`
-    fixed md:static
-    top-0 left-0
-    min-h-screen
-    w-64
-    bg-zinc-950
-    border-r border-zinc-800
-    transform transition-transform duration-300
-    ${isOpen ? "translate-x-0" : "-translate-x-full"}
-    md:translate-x-0
-    z-40
-  `}
->
+    <aside
+      className={`
+        fixed md:static
+        top-0 left-0
+        min-h-screen
+        w-64
+        bg-zinc-950
+        border-r border-zinc-800
+        transform transition-transform duration-300
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+        md:translate-x-0
+        z-40
+      `}
+    >
       <div className="h-full w-64 p-4 flex flex-col gap-2 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
@@ -68,6 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               key={item.path}
               onClick={() => {
                 navigate(item.path);
+
                 if (item.path === "/support") {
                   onSupportReset();
                 }
